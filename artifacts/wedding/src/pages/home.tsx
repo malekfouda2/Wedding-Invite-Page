@@ -63,7 +63,7 @@ function CountdownUnit({ value, label, color }: { value: number; label: string; 
         {str}
       </span>
       <div className="my-3 h-px w-8" style={{ background: color, opacity: 0.35 }} />
-      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.5)" }}>
+      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "rgba(0,0,0,0.4)" }}>
         {label}
       </span>
     </div>
@@ -84,7 +84,7 @@ const PALETTE = [
   { color: "#EE88B4", label: "Blush" },
   { color: "#D44A18", label: "Coral" },
   { color: "#E8A86A", label: "Peach" },
-  { color: "#D9B820", label: "Gold" },
+  { color: "#D9B820", label: "Yellow" },
   { color: "#82A85A", label: "Sage" },
   { color: "#4E7230", label: "Olive" },
 ];
@@ -396,7 +396,7 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 2: COUNTDOWN ────────────────────────── */}
-            <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={{ background: "linear-gradient(160deg, hsl(335 40% 10%) 0%, hsl(315 35% 13%) 100%)" }}>
+            <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={{ background: "linear-gradient(160deg, hsl(340 85% 95%) 0%, hsl(320 70% 93%) 100%)" }}>
               {/* Decorative glow orbs */}
               <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.1) 0%, transparent 70%)" }} />
               <div className="absolute bottom-0 right-1/4 w-48 h-48 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--secondary)/0.09) 0%, transparent 70%)" }} />
@@ -405,7 +405,7 @@ export default function Home() {
                 <p className="font-sans uppercase tracking-[0.4em] mb-4" style={{ fontSize: "0.58rem", color: "hsl(var(--primary))", opacity: 0.75 }}>
                   the moment we&apos;ve been dreaming of
                 </p>
-                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(44 50% 91%)", lineHeight: 1 }}>
+                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(var(--primary))", lineHeight: 1 }}>
                   Counting Down
                 </h2>
               </FadeUp>
@@ -415,16 +415,16 @@ export default function Home() {
                   { value: timeLeft.days, label: "Days", color: "hsl(var(--primary))" },
                   { value: timeLeft.hours, label: "Hours", color: "hsl(var(--secondary))" },
                   { value: timeLeft.minutes, label: "Minutes", color: "hsl(var(--accent))" },
-                  { value: timeLeft.seconds, label: "Seconds", color: "hsl(44 55% 85%)" },
+                  { value: timeLeft.seconds, label: "Seconds", color: "hsl(var(--secondary))" },
                 ].map((u, i) => (
-                  <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                  <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid rgba(0,0,0,0.08)" : "none" }}>
                     <CountdownUnit value={u.value} label={u.label} color={u.color} />
                   </div>
                 ))}
               </div>
 
               <FadeUp delay={0.22} className="text-center mt-16">
-                <p className="font-serif italic" style={{ fontSize: "1.05rem", color: "hsl(44 40% 80%)", opacity: 0.45 }}>
+                <p className="font-serif italic" style={{ fontSize: "1.05rem", color: "hsl(var(--foreground))", opacity: 0.45 }}>
                   Every second brings us closer to forever
                 </p>
               </FadeUp>
@@ -507,14 +507,14 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 4: VENUE ────────────────────────────── */}
-            <section id="venue" className="py-28 px-6 relative" style={{ background: "linear-gradient(160deg, hsl(162 35% 9%) 0%, hsl(180 30% 12%) 100%)" }}>
-              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(162 60% 40% / 0.1) 0%, transparent 70%)" }} />
+            <section id="venue" className="py-28 px-6 relative" style={{ background: "linear-gradient(160deg, hsl(162 50% 93%) 0%, hsl(180 45% 91%) 100%)" }}>
+              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(162 60% 40% / 0.08) 0%, transparent 70%)" }} />
 
               <FadeUp className="text-center mb-12">
                 <p className="font-sans uppercase tracking-[0.42em] mb-3" style={{ fontSize: "0.58rem", color: "hsl(var(--accent))", opacity: 0.85 }}>
                   where love finds its home
                 </p>
-                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(44 50% 91%)", lineHeight: 1 }}>
+                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(162 40% 22%)", lineHeight: 1 }}>
                   The Venue
                 </h2>
               </FadeUp>
@@ -525,13 +525,14 @@ export default function Home() {
                   <div
                     className="relative overflow-hidden"
                     style={{
-                      border: "1px solid rgba(212,175,100,0.18)",
+                      border: "1px solid rgba(0,0,0,0.09)",
                       borderRadius: 6,
-                      background: "hsl(162 35% 6%)",
+                      background: "hsl(0 0% 100% / 0.75)",
+                      backdropFilter: "blur(8px)",
                     }}
                   >
                     {/* Top accent line */}
-                    <div style={{ height: 2, background: "linear-gradient(90deg, transparent, hsl(var(--accent)/0.6), transparent)" }} />
+                    <div style={{ height: 2, background: "linear-gradient(90deg, transparent, hsl(162 50% 40% / 0.5), transparent)" }} />
 
                     {/* Corner ornaments */}
                     {[{top:"10px",left:"10px"},{top:"10px",right:"10px"},{bottom:"10px",left:"10px"},{bottom:"10px",right:"10px"}].map((pos, i) => (
@@ -556,17 +557,17 @@ export default function Home() {
 
                       {/* Venue name */}
                       <div>
-                        <p className="font-sans uppercase tracking-[0.35em] mb-2" style={{ fontSize: "0.55rem", color: "hsl(var(--accent))", opacity: 0.7 }}>
+                        <p className="font-sans uppercase tracking-[0.35em] mb-2" style={{ fontSize: "0.55rem", color: "hsl(162 40% 30%)", opacity: 0.8 }}>
                           Celebration Venue
                         </p>
-                        <h3 className="font-script" style={{ fontSize: "clamp(2.4rem, 8vw, 3.2rem)", color: "hsl(44 50% 91%)", lineHeight: 1.1 }}>
+                        <h3 className="font-script" style={{ fontSize: "clamp(2.4rem, 8vw, 3.2rem)", color: "hsl(var(--primary))", lineHeight: 1.1 }}>
                           The Vine
                         </h3>
-                        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, hsl(var(--accent)/0.4), transparent)", marginTop: "1rem" }} />
+                        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, hsl(162 40% 40% / 0.35), transparent)", marginTop: "1rem" }} />
                       </div>
 
                       {/* Date reminder */}
-                      <p className="font-serif italic" style={{ fontSize: "0.95rem", color: "hsl(44 30% 68%)", opacity: 0.7 }}>
+                      <p className="font-serif italic" style={{ fontSize: "0.95rem", color: "hsl(var(--foreground))", opacity: 0.5 }}>
                         Thursday, June 11, 2026
                       </p>
 
@@ -580,15 +581,15 @@ export default function Home() {
                           alignItems: "center",
                           gap: "0.5rem",
                           padding: "0.75rem 2rem",
-                          border: "1px solid hsl(var(--accent)/0.5)",
+                          border: "1px solid hsl(162 40% 35% / 0.4)",
                           borderRadius: 3,
-                          color: "hsl(44 50% 88%)",
+                          color: "hsl(162 40% 25%)",
                           textDecoration: "none",
-                          background: "hsl(var(--accent)/0.08)",
+                          background: "hsl(162 50% 40% / 0.08)",
                           transition: "background 0.2s, border-color 0.2s",
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(var(--accent)/0.16)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(var(--accent)/0.8)"; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(var(--accent)/0.08)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(var(--accent)/0.5)"; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(162 50% 40% / 0.16)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(162 40% 35% / 0.7)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(162 50% 40% / 0.08)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(162 40% 35% / 0.4)"; }}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -599,7 +600,7 @@ export default function Home() {
                     </div>
 
                     {/* Bottom accent line */}
-                    <div style={{ height: 2, background: "linear-gradient(90deg, transparent, hsl(var(--accent)/0.6), transparent)" }} />
+                    <div style={{ height: 2, background: "linear-gradient(90deg, transparent, hsl(162 50% 40% / 0.5), transparent)" }} />
                   </div>
                 </div>
               </FadeUp>
