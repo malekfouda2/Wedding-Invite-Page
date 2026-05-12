@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Great+Vibes&family=Josefin+Sans:wght@200;300;400;600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -43,6 +43,7 @@
   --font-sans: var(--app-font-sans);
   --font-serif: var(--app-font-serif);
   --font-mono: var(--app-font-mono);
+  --font-script: var(--app-font-script);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -57,79 +58,103 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  /* Cream/Ivory Background */
-  --background: 44 33% 97%;
-  --foreground: 20 14% 20%;
+  --background: 44 45% 96%;
+  --foreground: 22 30% 16%;
 
-  --border: 30 20% 90%;
-  --card: 44 33% 99%;
-  --card-foreground: 20 14% 20%;
-  --card-border: 30 20% 90%;
+  --border: 30 25% 86%;
+  --card: 44 50% 98%;
+  --card-foreground: 22 30% 16%;
+  --card-border: 30 25% 88%;
 
-  --popover: 44 33% 99%;
-  --popover-foreground: 20 14% 20%;
-  --popover-border: 30 20% 90%;
+  --popover: 44 50% 98%;
+  --popover-foreground: 22 30% 16%;
+  --popover-border: 30 25% 88%;
 
-  /* Deep Pink */
-  --primary: 341 78% 56%;
+  /* Vibrant hot pink */
+  --primary: 340 78% 53%;
   --primary-foreground: 0 0% 100%;
 
-  /* Coral Orange */
-  --secondary: 16 100% 66%;
+  /* Rich coral orange */
+  --secondary: 18 80% 54%;
   --secondary-foreground: 0 0% 100%;
 
-  /* Sage Green */
-  --muted: 76 11% 54%;
-  --muted-foreground: 44 33% 97%;
+  /* Sage green */
+  --muted: 96 22% 55%;
+  --muted-foreground: 22 30% 16%;
 
-  /* Warm Gold */
-  --accent: 45 93% 47%;
-  --accent-foreground: 20 14% 20%;
+  /* Warm gold */
+  --accent: 43 88% 48%;
+  --accent-foreground: 22 30% 16%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 30 20% 85%;
-  --ring: 341 78% 56%;
+  --input: 30 25% 83%;
+  --ring: 340 78% 53%;
 
-  --app-font-sans: 'Lato', sans-serif;
-  --app-font-serif: 'Playfair Display', serif;
+  --app-font-sans: 'Josefin Sans', sans-serif;
+  --app-font-serif: 'Cormorant Garamond', Georgia, serif;
+  --app-font-script: 'Great Vibes', cursive;
   --app-font-mono: Menlo, monospace;
-  --radius: 0.5rem;
+  --radius: 0.375rem;
 }
 
 .dark {
-  --background: 20 14% 15%;
-  --foreground: 44 33% 97%;
-  --border: 20 14% 25%;
-  --card: 20 14% 18%;
-  --card-foreground: 44 33% 97%;
-  --card-border: 20 14% 25%;
-  --popover: 20 14% 18%;
-  --popover-foreground: 44 33% 97%;
-  --popover-border: 20 14% 25%;
-  --primary: 341 78% 56%;
+  --background: 22 30% 10%;
+  --foreground: 44 45% 96%;
+  --border: 22 20% 22%;
+  --card: 22 30% 13%;
+  --card-foreground: 44 45% 96%;
+  --card-border: 22 20% 22%;
+  --popover: 22 30% 13%;
+  --popover-foreground: 44 45% 96%;
+  --popover-border: 22 20% 22%;
+  --primary: 340 78% 58%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 16 100% 66%;
+  --secondary: 18 80% 58%;
   --secondary-foreground: 0 0% 100%;
-  --muted: 76 11% 54%;
-  --muted-foreground: 20 14% 15%;
-  --accent: 45 93% 47%;
-  --accent-foreground: 20 14% 15%;
-  --destructive: 0 62.8% 30.6%;
+  --muted: 96 22% 45%;
+  --muted-foreground: 44 45% 96%;
+  --accent: 43 88% 52%;
+  --accent-foreground: 22 30% 10%;
+  --destructive: 0 62.8% 40%;
   --destructive-foreground: 0 0% 100%;
-  --input: 20 14% 25%;
-  --ring: 341 78% 56%;
+  --input: 22 20% 22%;
+  --ring: 340 78% 58%;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
+    font-family: var(--app-font-sans);
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-medium;
+  h1, h2, h3, h4 {
+    font-family: var(--app-font-serif);
   }
+  .font-script {
+    font-family: var(--app-font-script);
+  }
+  .font-sans {
+    font-family: var(--app-font-sans);
+  }
+  .font-serif {
+    font-family: var(--app-font-serif);
+  }
+}
+
+/* Decorative ornament */
+.ornament::before,
+.ornament::after {
+  content: '✦';
+  color: hsl(var(--primary));
+  opacity: 0.4;
+  font-size: 0.5rem;
+  vertical-align: middle;
+  margin: 0 0.75rem;
 }

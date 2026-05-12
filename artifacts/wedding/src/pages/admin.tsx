@@ -1,133 +1,223 @@
-import { useAdminMe, useAdminLogin, useAdminLogout, useGetAllRsvps } from "@workspace/api-client-react";
+import { useAdminMe, useAdminLogin, useAdminLogout, useGetAllRsvps, getAdminMeQueryKey } from "@workspace/api-client-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 export default function Admin() {
-  const { data: session, isLoading: sessionLoading, refetch: refetchSession } = useAdminMe();
+  const qc = useQueryClient();
+  const { data: session, isLoading } = useAdminMe({ query: { queryKey: getAdminMeQueryKey() } });
   const loginMutation = useAdminLogin();
   const logoutMutation = useAdminLogout();
-  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ data: { username, password } }, {
-      onSuccess: () => {
-        toast.success("Logged in successfully");
-        refetchSession();
-      },
-      onError: () => {
-        toast.error("Invalid credentials");
+    setError("");
+    loginMutation.mutate(
+      { data: { username, password } },
+      {
+        onSuccess: () => qc.invalidateQueries({ queryKey: getAdminMeQueryKey() }),
+        onError: () => setError("Invalid username or password."),
       }
-    });
+    );
   };
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        toast.success("Logged out");
-        refetchSession();
-      }
+      onSuccess: () => qc.invalidateQueries({ queryKey: getAdminMeQueryKey() }),
     });
   };
 
-  if (sessionLoading) return <div className="min-h-screen flex items-center justify-center text-primary font-serif">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "hsl(var(--background))" }}>
+        <p className="font-script text-foreground/30" style={{ fontSize: "2rem" }}>Loading...</p>
+      </div>
+    );
+  }
 
   if (!session?.authenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-xl border border-border">
-          <h1 className="text-3xl font-serif text-primary text-center mb-8">Admin Access</h1>
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "hsl(var(--background))" }}>
+        <div
+          className="w-full max-w-sm p-10 rounded-[2px]"
+          style={{
+            background: "hsl(var(--card))",
+            border: "1px solid hsl(var(--primary)/0.12)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
+          }}
+        >
+          <div className="text-center mb-8">
+            <p className="font-sans uppercase tracking-[0.35em] text-foreground/35 mb-1" style={{ fontSize: "0.58rem" }}>
+              restricted
+            </p>
+            <h1 className="font-script" style={{ fontSize: "2.8rem", color: "hsl(var(--primary))", lineHeight: 1 }}>
+              Admin Access
+            </h1>
+          </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Username</label>
-              <Input value={username} onChange={e => setUsername(e.target.value)} required />
+              <label className="font-sans uppercase tracking-[0.2em] text-foreground/40 block mb-2" style={{ fontSize: "0.58rem" }}>
+                Username
+              </label>
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                data-testid="input-username"
+                className="rounded-[2px] font-serif"
+                style={{ borderColor: "hsl(var(--primary)/0.2)", height: "2.8rem" }}
+                required
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <Input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+              <label className="font-sans uppercase tracking-[0.2em] text-foreground/40 block mb-2" style={{ fontSize: "0.58rem" }}>
+                Password
+              </label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                data-testid="input-password"
+                className="rounded-[2px] font-serif"
+                style={{ borderColor: "hsl(var(--primary)/0.2)", height: "2.8rem" }}
+                required
+              />
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loginMutation.isPending}>
-              {loginMutation.isPending ? "Logging in..." : "Login"}
-            </Button>
+            {error && (
+              <p className="font-sans text-destructive text-center" style={{ fontSize: "0.72rem" }}>
+                {error}
+              </p>
+            )}
+            <button
+              type="submit"
+              data-testid="button-login"
+              disabled={loginMutation.isPending}
+              className="w-full py-3 font-sans uppercase tracking-[0.3em] rounded-[2px] transition-all duration-200 disabled:opacity-50"
+              style={{ fontSize: "0.65rem", background: "hsl(var(--primary))", color: "white" }}
+            >
+              {loginMutation.isPending ? "Signing in..." : "Enter"}
+            </button>
           </form>
         </div>
       </div>
     );
   }
 
-  return <AdminDashboard onLogout={handleLogout} />;
+  return <Dashboard onLogout={handleLogout} />;
 }
 
-function AdminDashboard({ onLogout }: { onLogout: () => void }) {
+function Dashboard({ onLogout }: { onLogout: () => void }) {
   const { data: rsvps, isLoading } = useGetAllRsvps();
 
-  const totalAttending = rsvps?.filter(r => r.attending).length || 0;
-  const totalPlusOnes = rsvps?.filter(r => r.attending && r.hasPlusOne).length || 0;
-  const totalGuests = totalAttending + totalPlusOnes;
+  const attending = rsvps?.filter((r) => r.attending).length ?? 0;
+  const notAttending = rsvps?.filter((r) => !r.attending).length ?? 0;
+  const plusOnes = rsvps?.filter((r) => r.hasPlusOne).length ?? 0;
+  const totalGuests = attending + plusOnes;
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-serif text-primary">RSVP Dashboard</h1>
-          <Button variant="outline" onClick={onLogout}>Logout</Button>
+    <div className="min-h-screen p-6 md:p-10" style={{ background: "hsl(var(--background))" }}>
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-sans uppercase tracking-[0.3em] text-foreground/35 mb-1" style={{ fontSize: "0.58rem" }}>
+              admin
+            </p>
+            <h1 className="font-script" style={{ fontSize: "3rem", color: "hsl(var(--primary))", lineHeight: 1 }}>
+              RSVP Dashboard
+            </h1>
+          </div>
+          <button
+            onClick={onLogout}
+            data-testid="button-logout"
+            className="font-sans uppercase tracking-[0.25em] text-foreground/40 hover:text-foreground/80 transition-colors"
+            style={{ fontSize: "0.6rem" }}
+          >
+            Log out
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Total Responses</h3>
-            <p className="text-4xl font-serif text-primary">{rsvps?.length || 0}</p>
-          </div>
-          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Attending</h3>
-            <p className="text-4xl font-serif text-secondary">{totalAttending}</p>
-          </div>
-          <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Total Guest Count</h3>
-            <p className="text-4xl font-serif text-accent">{totalGuests}</p>
-          </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Total Responses", value: rsvps?.length ?? 0, color: "hsl(var(--foreground))" },
+            { label: "Attending", value: attending, color: "hsl(var(--primary))" },
+            { label: "Not Attending", value: notAttending, color: "hsl(var(--muted))" },
+            { label: "Total Guests", value: totalGuests, color: "hsl(var(--secondary))" },
+          ].map((s, i) => (
+            <div
+              key={i}
+              className="p-6 rounded-[2px]"
+              style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+            >
+              <p className="font-sans uppercase tracking-[0.2em] text-foreground/35 mb-2" style={{ fontSize: "0.55rem" }}>
+                {s.label}
+              </p>
+              <p className="font-serif font-light" style={{ fontSize: "2.5rem", color: s.color, lineHeight: 1 }}>
+                {s.value}
+              </p>
+            </div>
+          ))}
         </div>
 
-        <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm">
+        {/* Table */}
+        <div
+          className="rounded-[2px] overflow-hidden"
+          style={{ border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }}
+        >
           {isLoading ? (
-            <div className="p-8 text-center text-muted-foreground">Loading RSVPs...</div>
+            <p className="text-center py-12 font-sans text-foreground/30 uppercase tracking-widest" style={{ fontSize: "0.6rem" }}>
+              Loading...
+            </p>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Guest Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>+1 Included</TableHead>
-                  <TableHead>+1 Name</TableHead>
-                  <TableHead>Submitted At</TableHead>
+                <TableRow style={{ background: "hsl(var(--primary)/0.04)" }}>
+                  {["Guest Name", "Status", "+1", "+1 Name", "Submitted"].map((h) => (
+                    <TableHead
+                      key={h}
+                      className="font-sans uppercase tracking-[0.2em] text-foreground/40"
+                      style={{ fontSize: "0.58rem" }}
+                    >
+                      {h}
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rsvps?.map((rsvp) => (
-                  <TableRow key={rsvp.id}>
-                    <TableCell className="font-medium">{rsvp.guestName}</TableCell>
+                {rsvps?.map((r) => (
+                  <TableRow key={r.id} data-testid={`row-rsvp-${r.id}`}>
+                    <TableCell className="font-serif" style={{ fontSize: "0.95rem" }}>{r.guestName}</TableCell>
                     <TableCell>
-                      <Badge variant={rsvp.attending ? "default" : "secondary"} className={rsvp.attending ? "bg-primary text-white" : ""}>
-                        {rsvp.attending ? "Attending" : "Not Attending"}
-                      </Badge>
+                      <span
+                        className="font-sans uppercase tracking-wider px-2 py-1 rounded-[2px]"
+                        style={{
+                          fontSize: "0.58rem",
+                          background: r.attending ? "hsl(var(--primary)/0.1)" : "hsl(var(--muted)/0.15)",
+                          color: r.attending ? "hsl(var(--primary))" : "hsl(var(--muted))",
+                        }}
+                      >
+                        {r.attending ? "Attending" : "Declined"}
+                      </span>
                     </TableCell>
-                    <TableCell>{rsvp.hasPlusOne ? "Yes" : "No"}</TableCell>
-                    <TableCell className="text-muted-foreground">{rsvp.plusOneName || "-"}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(rsvp.submittedAt).toLocaleDateString()}
+                    <TableCell className="font-sans text-foreground/50" style={{ fontSize: "0.78rem" }}>
+                      {r.hasPlusOne ? "Yes" : "—"}
+                    </TableCell>
+                    <TableCell className="font-sans text-foreground/50" style={{ fontSize: "0.78rem" }}>
+                      {r.plusOneName || "—"}
+                    </TableCell>
+                    <TableCell className="font-sans text-foreground/35" style={{ fontSize: "0.72rem" }}>
+                      {new Date(r.submittedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </TableCell>
                   </TableRow>
                 ))}
                 {(!rsvps || rsvps.length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      No RSVPs yet.
+                    <TableCell colSpan={5} className="text-center py-16 font-sans text-foreground/25 uppercase tracking-widest" style={{ fontSize: "0.6rem" }}>
+                      No responses yet
                     </TableCell>
                   </TableRow>
                 )}

@@ -1,181 +1,259 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSubmitRsvp } from "@workspace/api-client-react";
-import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
-import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
-const rsvpSchema = z.object({
-  attending: z.enum(["yes", "no"]),
-  guestName: z.string().min(2, "Please enter your name").optional(),
-  hasPlusOne: z.boolean().default(false).optional(),
-  plusOneName: z.string().optional()
-}).refine(data => {
-  if (data.attending === "yes" && !data.guestName) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Please enter your name",
-  path: ["guestName"]
-});
+const rsvpSchema = z
+  .object({
+    attending: z.enum(["yes", "no"]),
+    guestName: z.string().optional(),
+    hasPlusOne: z.boolean().default(false),
+    plusOneName: z.string().optional(),
+  })
+  .refine(
+    (d) => {
+      if (d.attending === "yes" && (!d.guestName || d.guestName.trim().length < 2)) return false;
+      return true;
+    },
+    { message: "Please enter your name", path: ["guestName"] }
+  );
 
-type RsvpFormValues = z.infer<typeof rsvpSchema>;
+type FormValues = z.infer<typeof rsvpSchema>;
 
 export default function RsvpForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState<"yes" | "no" | null>(null);
   const submitRsvp = useSubmitRsvp();
 
-  const form = useForm<RsvpFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(rsvpSchema),
-    defaultValues: {
-      attending: undefined,
-      guestName: "",
-      hasPlusOne: false,
-      plusOneName: ""
-    }
+    defaultValues: { attending: undefined as unknown as "yes", guestName: "", hasPlusOne: false, plusOneName: "" },
   });
 
   const attending = form.watch("attending");
   const hasPlusOne = form.watch("hasPlusOne");
 
-  const onSubmit = (data: RsvpFormValues) => {
+  const onSubmit = (data: FormValues) => {
     const isAttending = data.attending === "yes";
-    
-    submitRsvp.mutate({
-      data: {
-        attending: isAttending,
-        guestName: isAttending ? data.guestName! : "Not Attending",
-        hasPlusOne: data.hasPlusOne,
-        plusOneName: data.hasPlusOne ? data.plusOneName : null
-      }
-    }, {
-      onSuccess: () => {
-        setSubmitted(true);
-        toast.success(isAttending ? "We can't wait to see you!" : "We will miss you!");
+    submitRsvp.mutate(
+      {
+        data: {
+          attending: isAttending,
+          guestName: isAttending ? data.guestName! : "Not Attending",
+          hasPlusOne: data.hasPlusOne,
+          plusOneName: data.hasPlusOne ? data.plusOneName : null,
+        },
       },
-      onError: () => {
-        toast.error("Something went wrong. Please try again.");
+      {
+        onSuccess: () => setSubmitted(isAttending ? "yes" : "no"),
       }
-    });
+    );
   };
 
-  if (submitted) {
+  if (submitted !== null) {
     return (
-      <div className="text-center py-12 animate-in fade-in slide-in-from-bottom-4">
-        <div className="w-16 h-16 mx-auto bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+      <motion.div
+        className="text-center py-10 flex flex-col items-center gap-5"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        data-testid="rsvp-success"
+      >
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center"
+          style={{ background: submitted === "yes" ? "hsl(var(--primary)/0.1)" : "hsl(var(--muted)/0.2)" }}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={submitted === "yes" ? "hsl(var(--primary))" : "hsl(var(--muted))"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            {submitted === "yes" ? (
+              <path d="M20 6L9 17l-5-5" />
+            ) : (
+              <path d="M12 21C12 21 4 14 4 9a8 8 0 0116 0c0 5-8 12-8 12z" />
+            )}
+          </svg>
         </div>
-        <h3 className="text-2xl font-serif text-primary mb-2">Thank You</h3>
-        <p className="text-muted-foreground">Your response has been recorded.</p>
-      </div>
+        <div>
+          <p className="font-script mb-1" style={{ fontSize: "2rem", color: "hsl(var(--primary))", lineHeight: 1.1 }}>
+            {submitted === "yes" ? "We cannot wait!" : "We will miss you"}
+          </p>
+          <p className="font-sans text-foreground/45 tracking-wide" style={{ fontSize: "0.75rem" }}>
+            {submitted === "yes"
+              ? "Your reply has been received. See you on June 11th."
+              : "Thank you for letting us know. You are in our hearts."}
+          </p>
+        </div>
+      </motion.div>
     );
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Attendance selection */}
         <FormField
           control={form.control}
           name="attending"
           render={({ field }) => (
-            <FormItem className="space-y-4">
-              <FormLabel className="text-lg font-serif text-foreground">Will you be joining us?</FormLabel>
+            <FormItem>
+              <FormLabel className="font-sans uppercase tracking-[0.25em] text-foreground/50 block mb-4" style={{ fontSize: "0.62rem" }}>
+                Will you be joining us?
+              </FormLabel>
               <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-2"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0 p-4 border rounded-xl hover:bg-card/50 transition-colors">
-                    <FormControl>
-                      <RadioGroupItem value="yes" />
-                    </FormControl>
-                    <FormLabel className="font-medium flex-1 cursor-pointer">
-                      Joyfully Accept
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0 p-4 border rounded-xl hover:bg-card/50 transition-colors">
-                    <FormControl>
-                      <RadioGroupItem value="no" />
-                    </FormControl>
-                    <FormLabel className="font-medium flex-1 cursor-pointer">
-                      Regretfully Decline
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["yes", "no"] as const).map((val) => {
+                    const selected = field.value === val;
+                    return (
+                      <button
+                        key={val}
+                        type="button"
+                        data-testid={`radio-attend-${val}`}
+                        onClick={() => field.onChange(val)}
+                        className="relative py-4 px-4 rounded-[2px] transition-all duration-300 text-left"
+                        style={{
+                          border: selected
+                            ? "1px solid hsl(var(--primary)/0.6)"
+                            : "1px solid hsl(var(--border))",
+                          background: selected
+                            ? "hsl(var(--primary)/0.05)"
+                            : "transparent",
+                        }}
+                      >
+                        <span
+                          className="font-serif block"
+                          style={{
+                            fontSize: "1.15rem",
+                            color: selected ? "hsl(var(--primary))" : "hsl(var(--foreground)/0.6)",
+                          }}
+                        >
+                          {val === "yes" ? "Joyfully Accept" : "Regretfully Decline"}
+                        </span>
+                        {selected && (
+                          <span
+                            className="absolute top-2 right-2"
+                            style={{ color: "hsl(var(--primary))", fontSize: "0.6rem", opacity: 0.6 }}
+                          >
+                            ✦
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {attending === "yes" && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-top-4">
-            <FormField
-              control={form.control}
-              name="guestName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} className="bg-background/50 border-primary/20 focus-visible:ring-primary" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="hasPlusOne"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border border-primary/20 rounded-xl bg-background/30">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      I am bringing a guest
-                    </FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            {hasPlusOne && (
+        {/* Attending fields */}
+        <AnimatePresence>
+          {attending === "yes" && (
+            <motion.div
+              className="space-y-5"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            >
               <FormField
                 control={form.control}
-                name="plusOneName"
+                name="guestName"
                 render={({ field }) => (
-                  <FormItem className="animate-in fade-in">
-                    <FormLabel>Guest's Full Name</FormLabel>
+                  <FormItem>
+                    <FormLabel className="font-sans uppercase tracking-[0.22em] text-foreground/45" style={{ fontSize: "0.6rem" }}>
+                      Your Full Name
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Jane Doe" {...field} className="bg-background/50 border-primary/20 focus-visible:ring-primary" />
+                      <Input
+                        placeholder="Your name"
+                        data-testid="input-guest-name"
+                        className="rounded-[2px] font-serif text-base"
+                        style={{ borderColor: "hsl(var(--primary)/0.2)", height: "2.8rem" }}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
-          </div>
-        )}
 
-        <Button 
-          type="submit" 
-          className="w-full h-12 text-lg font-serif bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all"
+              {/* Plus one toggle */}
+              <button
+                type="button"
+                data-testid="toggle-plus-one"
+                onClick={() => form.setValue("hasPlusOne", !hasPlusOne)}
+                className="w-full py-3 px-4 rounded-[2px] flex items-center justify-between transition-all duration-200"
+                style={{
+                  border: hasPlusOne ? "1px solid hsl(var(--primary)/0.5)" : "1px solid hsl(var(--border))",
+                  background: hasPlusOne ? "hsl(var(--primary)/0.04)" : "transparent",
+                }}
+              >
+                <span className="font-sans text-foreground/60 uppercase tracking-[0.2em]" style={{ fontSize: "0.65rem" }}>
+                  Bringing a guest?
+                </span>
+                <div
+                  className="w-8 h-4 rounded-full transition-all duration-300 relative"
+                  style={{ background: hasPlusOne ? "hsl(var(--primary))" : "hsl(var(--border))" }}
+                >
+                  <div
+                    className="absolute top-[3px] w-[10px] h-[10px] rounded-full bg-white transition-all duration-300"
+                    style={{ left: hasPlusOne ? "calc(100% - 13px)" : "3px", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }}
+                  />
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {hasPlusOne && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="plusOneName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-sans uppercase tracking-[0.22em] text-foreground/45" style={{ fontSize: "0.6rem" }}>
+                            Guest&apos;s Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Guest's name"
+                              data-testid="input-plus-one-name"
+                              className="rounded-[2px] font-serif text-base"
+                              style={{ borderColor: "hsl(var(--primary)/0.2)", height: "2.8rem" }}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button
+          type="submit"
+          data-testid="button-submit-rsvp"
           disabled={!attending || submitRsvp.isPending}
+          className="w-full py-4 rounded-[2px] font-sans uppercase tracking-[0.3em] transition-all duration-300 disabled:opacity-40"
+          style={{
+            fontSize: "0.7rem",
+            background: attending ? "hsl(var(--primary))" : "transparent",
+            color: attending ? "white" : "hsl(var(--foreground)/0.4)",
+            border: attending ? "1px solid hsl(var(--primary))" : "1px solid hsl(var(--border))",
+          }}
         >
-          {submitRsvp.isPending ? "Submitting..." : "Send RSVP"}
-        </Button>
+          {submitRsvp.isPending ? "Sending..." : "Send My Reply"}
+        </button>
       </form>
     </Form>
   );
