@@ -149,11 +149,11 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                 transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
                 whileHover={!isOpening ? { scale: 1.06 } : {}}
               >
-                {/* Pulsing crimson outer glow */}
-                <div style={{ position: "absolute", inset: -18, borderRadius: "50%", background: "radial-gradient(circle, rgba(160,15,50,0.4) 0%, transparent 65%)", filter: "blur(16px)", animation: "pulse 3s ease-in-out infinite" }} />
+                {/* Pulsing crimson outer glow — box-shadow is compositor-safe on mobile */}
+                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", boxShadow: "0 0 32px 14px rgba(160,15,50,0.35)", animation: "pulse 3s ease-in-out infinite", willChange: "opacity" }} />
 
                 {/* Spinning gold dashed ring outside the seal */}
-                <svg width="140" height="140" viewBox="0 0 140 140" style={{ position: "absolute", inset: 0, animation: "sealSpin 28s linear infinite" }} aria-hidden="true">
+                <svg width="140" height="140" viewBox="0 0 140 140" style={{ position: "absolute", inset: 0, animation: "sealSpin 28s linear infinite", willChange: "transform" }} aria-hidden="true">
                   <circle cx="70" cy="70" r="67.5" fill="none" stroke="rgba(212,175,100,0.45)" strokeWidth="1" strokeDasharray="2 4" />
                 </svg>
 

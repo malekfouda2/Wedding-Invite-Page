@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from "framer-motion";
 import Envelope from "@/components/envelope";
 import RsvpForm from "@/components/rsvp-form";
 import FloatingElements from "@/components/floating-elements";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // @ts-ignore
 import floralFrame from "@assets/WhatsApp_Image_2026-05-10_at_12.05.16_(1)_1778550657210.jpeg";
@@ -148,40 +149,6 @@ const timelineEvents = [
   },
 ];
 
-// Ambient floating particles for the invitation section
-function FloatingParticles() {
-  const particles = useMemo(() =>
-    Array.from({ length: 16 }, (_, i) => ({
-      id: i,
-      size: Math.random() * 4 + 2,
-      left: Math.random() * 96 + 2,
-      top: Math.random() * 90 + 2,
-      color: ["hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--accent))", "hsl(var(--muted))"][i % 4],
-      delay: Math.random() * 6,
-      duration: Math.random() * 5 + 7,
-      opacity: Math.random() * 0.25 + 0.06,
-    })), []);
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full"
-          style={{ width: p.size, height: p.size, left: `${p.left}%`, top: `${p.top}%`, background: p.color }}
-          animate={{
-            y: [0, -18, 0, 10, 0],
-            x: [0, 8, -5, 3, 0],
-            opacity: [p.opacity * 0.4, p.opacity, p.opacity * 0.6, p.opacity, p.opacity * 0.4],
-            scale: [1, 1.3, 0.9, 1.1, 1],
-          }}
-          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-}
-
 // Section nav dots
 function SectionNav({ active }: { active: string }) {
   return (
@@ -218,11 +185,19 @@ function SectionNav({ active }: { active: string }) {
   );
 }
 
-// Parallax floral image
+// Parallax floral image — disabled on mobile to avoid scroll-listener jank
 function ParallaxFloral({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  const isMobile = useIsMobile();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  if (isMobile) {
+    return (
+      <div className={`absolute overflow-hidden pointer-events-none ${className}`} style={style}>
+        <img src={floralFrame} alt="" aria-hidden style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </div>
+    );
+  }
   return (
     <div ref={ref} className={`absolute overflow-hidden pointer-events-none ${className}`} style={style}>
       <motion.img src={floralFrame} alt="" aria-hidden style={{ y, width: "100%", height: "100%", objectFit: "cover" }} />
@@ -326,9 +301,6 @@ export default function Home() {
                 style={{ background: "radial-gradient(ellipse 62% 58% at 50% 50%, rgba(250,248,243,0.91) 28%, rgba(250,248,243,0.35) 65%, transparent 100%)" }}
               />
 
-              {/* Ambient floating particles */}
-              <FloatingParticles />
-
               {/* Invitation card */}
               <motion.div
                 className="relative z-10 flex flex-col items-center text-center px-8 py-10 max-w-[600px] mx-auto"
@@ -426,8 +398,8 @@ export default function Home() {
             {/* ── SECTION 2: COUNTDOWN ────────────────────────── */}
             <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={{ background: "hsl(22 28% 12%)" }}>
               {/* Decorative glow orbs */}
-              <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.08) 0%, transparent 70%)", filter: "blur(40px)" }} />
-              <div className="absolute bottom-0 right-1/4 w-48 h-48 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--secondary)/0.07) 0%, transparent 70%)", filter: "blur(30px)" }} />
+              <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.1) 0%, transparent 70%)" }} />
+              <div className="absolute bottom-0 right-1/4 w-48 h-48 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--secondary)/0.09) 0%, transparent 70%)" }} />
 
               <FadeUp className="text-center mb-16">
                 <p className="font-sans uppercase tracking-[0.4em] mb-4" style={{ fontSize: "0.58rem", color: "hsl(var(--primary))", opacity: 0.75 }}>
@@ -507,10 +479,9 @@ export default function Home() {
                         <div className="relative z-10 flex-shrink-0">
                           <motion.div
                             className="w-[18px] h-[18px] rounded-full"
-                            style={{ background: event.color }}
+                            style={{ background: event.color, boxShadow: `0 0 0 4px hsl(var(--background)), 0 0 0 6px ${event.color}33` }}
                             whileHover={{ scale: 1.5 }}
-                            animate={{ boxShadow: [`0 0 0 4px hsl(var(--background)), 0 0 0 6px ${event.color}33`, `0 0 0 4px hsl(var(--background)), 0 0 12px 8px ${event.color}22`] }}
-                            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                            transition={{ duration: 0.25 }}
                           />
                         </div>
 
@@ -537,7 +508,7 @@ export default function Home() {
 
             {/* ── SECTION 4: VENUE ────────────────────────────── */}
             <section id="venue" className="py-28 px-6 relative" style={{ background: "hsl(22 28% 12%)" }}>
-              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--accent)/0.07) 0%, transparent 70%)", filter: "blur(40px)" }} />
+              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--accent)/0.09) 0%, transparent 70%)" }} />
 
               <FadeUp className="text-center mb-12">
                 <p className="font-sans uppercase tracking-[0.42em] mb-3" style={{ fontSize: "0.58rem", color: "hsl(var(--accent))", opacity: 0.85 }}>
@@ -611,9 +582,9 @@ export default function Home() {
             <section id="dresscode" className="py-28 px-6 relative overflow-hidden" style={{ background: "hsl(44 45% 96%)" }}>
               {/* Soft background texture — faint radial gradients */}
               <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(201,18,85,0.06) 0%, transparent 70%)", filter: "blur(40px)" }} />
-                <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(78,114,48,0.07) 0%, transparent 70%)", filter: "blur(36px)" }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(217,184,32,0.05) 0%, transparent 70%)", filter: "blur(50px)" }} />
+                <div className="absolute top-0 right-0 w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(201,18,85,0.08) 0%, transparent 70%)" }} />
+                <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(78,114,48,0.09) 0%, transparent 70%)" }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(217,184,32,0.06) 0%, transparent 70%)" }} />
               </div>
 
               <div className="relative z-10 max-w-lg mx-auto">

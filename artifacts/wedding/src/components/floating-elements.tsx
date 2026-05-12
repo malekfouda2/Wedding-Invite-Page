@@ -1,3 +1,5 @@
+import { useIsMobile } from "@/hooks/use-mobile";
+
 const CSS = `
   @keyframes floatA {
     0%,100% { transform: translate(0px, 0px)  rotate(0deg)   scale(1);    }
@@ -108,7 +110,14 @@ function Heart({ color, size }: { color: string; size: number }) {
   );
 }
 
+// On mobile show only the 6 most prominent items (3 flowers, 3 hearts)
+// to stay smooth — they're picked from the edges so they don't crowd content
+const MOBILE_INDICES = new Set([0, 2, 4, 6, 8, 10]);
+
 export default function FloatingElements() {
+  const isMobile = useIsMobile();
+  const items = isMobile ? ITEMS.filter((_, i) => MOBILE_INDICES.has(i)) : ITEMS;
+
   return (
     <>
       <style>{CSS}</style>
@@ -122,7 +131,7 @@ export default function FloatingElements() {
           overflow: "hidden",
         }}
       >
-        {ITEMS.map((item, i) => (
+        {items.map((item, i) => (
           /* Outer div: static initial rotation for visual variety */
           <div
             key={i}
