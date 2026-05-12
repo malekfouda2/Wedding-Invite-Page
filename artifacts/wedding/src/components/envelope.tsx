@@ -45,11 +45,11 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
           onClick={handleClick}
           exit={{ opacity: 0, y: 80, scale: 0.94, transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] } }}
         >
-          {/* 3D tilt wrapper */}
+          {/* 3D tilt wrapper — no preserve-3d to avoid iOS Safari z-index stacking bugs */}
           <motion.div
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            style={{ perspective: 1400, perspectiveOrigin: "50% 80%", rotateX, rotateY, transformStyle: "preserve-3d" }}
+            style={{ perspective: 1400, perspectiveOrigin: "50% 80%", rotateX, rotateY }}
             className="relative"
           >
             {/* Letter card — peeks up during opening */}
@@ -64,7 +64,7 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                 boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
                 zIndex: 5,
               }}
-              animate={isOpening ? { y: "-65%", opacity: 1 } : { y: "0%", opacity: 0.75 }}
+              animate={isOpening ? { y: "-65%", opacity: 1 } : { y: "0%", opacity: 0 }}
               transition={{ duration: 0.75, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="flex items-center gap-3 px-4">
