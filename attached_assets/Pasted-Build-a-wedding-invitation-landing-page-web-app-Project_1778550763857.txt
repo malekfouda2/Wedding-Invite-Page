@@ -1,0 +1,92 @@
+Build a wedding invitation landing page web app.
+
+Project details:
+- Groom name: Hussam
+- Bride name: Yara
+- Wedding date: 11 June 2026
+- Overall style: elegant wedding feeling, summer vibes, tropical colors, soft romantic design
+- Use the attached color palette/photos as the main visual reference
+
+Main landing page requirements:
+
+1. Opening Envelope Animation
+- The first thing visitors should see is a closed envelope.
+- The envelope should have a decorative pin/seal with the initials in Arabic letters.
+- The Arabic initials should look old-school, artistic, and calligraphy-inspired.
+- When the visitor clicks the envelope, it should open in a very smooth, artistic, premium animation.
+- After opening, the invitation content should be revealed.
+
+2. Invitation Content
+- Add elegant romantic textual content for the wedding invitation.
+- Mention Hussam and Yara clearly.
+- Mention the wedding date: 11 June 2026.
+- The tone should feel warm, classy, and celebratory.
+
+3. Countdown Section
+- After scrolling, show a countdown timer until the wedding date.
+- Countdown should include days, hours, minutes, and seconds.
+- Make it visually beautiful and consistent with the wedding theme.
+
+4. Wedding Day Timeline
+- Add a roadmap/timeline section showing the schedule of the wedding day.
+- Example timeline:
+  - Ceremony starts at 6:00 PM
+  - Party starts at 7:00 PM
+  - Buffet starts at 9:00 PM
+  - Party continues after the buffet
+- Design it like an elegant wedding roadmap/timeline.
+
+5. Location Map
+- Add a section for the wedding location.
+- Include an embedded map placeholder or interactive map area.
+- Make it easy to replace the location later.
+
+6. RSVP Section
+- Add a question: “Will you come?”
+- Options should be radio buttons:
+  - Yes
+  - No
+- If the visitor selects “Yes”, show a form asking for:
+  - Guest name
+  - Whether they have a plus one
+  - If they choose plus one, show another field for plus one name
+- If the visitor selects “No”, either show a simple thank-you message or allow them to submit their response.
+
+7. Form Storage
+- Store all RSVP form submissions.
+- Save:
+  - Attendance answer: Yes/No
+  - Guest name
+  - Plus one answer
+  - Plus one name if provided
+  - Submission date/time
+
+8. Admin View
+- Create a very simple admin page to view all RSVP entries.
+- Admin login:
+  - Username: admin
+  - Password: admin123
+- After login, admin should see a clean table of all submissions.
+- Keep the admin UI simple and functional.
+- Add logout functionality.
+
+Design requirements:
+- Fully responsive for mobile, tablet, and desktop.
+- Smooth scrolling and elegant animations.
+- Use tropical summer wedding colors inspired by the attached palette.
+- Avoid a generic template look.
+- Make the page feel custom, romantic, warm, and premium.
+- Use clean typography, soft shadows, rounded elements, and subtle floral/tropical decorative details.
+- The experience should feel like opening a real wedding invitation.
+
+Technical requirements:
+- Build the full app in Replit.
+- Use simple, maintainable code.
+- Include clear file structure.
+- Make sure the app runs immediately after setup.
+- Add comments where customization is needed, especially for:
+  - Wedding location/map
+  - Text content
+  - Timeline times
+  - Color palette
+  - Arabic initials on the envelope pin
