@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 
-// Public asset — BASE_URL includes trailing slash already
-const initialsImg = `${import.meta.env.BASE_URL}initials-seal.png`;
 
 type Phase = "idle" | "opening" | "done";
 
@@ -158,41 +156,97 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                 />
                 {/* Main seal circle */}
                 <div
-                  className="relative overflow-hidden"
+                  className="relative flex items-center justify-center overflow-hidden"
                   style={{
-                    width: 90,
-                    height: 90,
+                    width: 96,
+                    height: 96,
                     borderRadius: "50%",
-                    background: "radial-gradient(circle at 38% 32%, #EB6695, #C92060 55%, #8D1340)",
+                    background: "radial-gradient(circle at 38% 30%, #ED6E9A, #C92060 52%, #8D1340)",
                     boxShadow:
-                      "0 0 0 2px #9E1748, 0 0 0 5px rgba(158,23,72,0.35), 0 8px 28px rgba(201,32,96,0.5), inset 0 -4px 12px rgba(0,0,0,0.25), inset 0 3px 8px rgba(255,255,255,0.18)",
+                      "0 0 0 2px #9E1748, 0 0 0 5px rgba(158,23,72,0.3), 0 10px 32px rgba(201,32,96,0.55), inset 0 -5px 14px rgba(0,0,0,0.28), inset 0 3px 8px rgba(255,255,255,0.2)",
                   }}
                 >
-                  {/* Calligraphy: multiply blend makes white bg vanish, ink appears naturally on seal */}
-                  <img
-                    src={initialsImg}
-                    alt="ح ي"
-                    style={{
-                      position: "absolute",
-                      inset: "-6%",
-                      width: "112%",
-                      height: "112%",
-                      objectFit: "contain",
-                      mixBlendMode: "multiply",
-                      opacity: 0.82,
-                      filter: "contrast(1.3) brightness(0.9)",
-                    }}
-                  />
-                  {/* Inner border ring */}
+                  {/* Artistic calligraphy SVG composition */}
+                  <svg
+                    viewBox="0 0 96 96"
+                    width="96"
+                    height="96"
+                    style={{ position: "absolute", inset: 0 }}
+                    aria-label="ح ي"
+                  >
+                    {/* Inner decorative ring */}
+                    <circle cx="48" cy="48" r="43" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+                    <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+
+                    {/* Top ornament — delicate crown flourish */}
+                    <g transform="translate(48, 12)" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8" strokeLinecap="round">
+                      <line x1="0" y1="0" x2="-10" y2="0" />
+                      <line x1="0" y1="0" x2="10" y2="0" />
+                      <path d="M-10,0 Q-8,-4 -5,-3 Q-3,-2 0,-4 Q3,-2 5,-3 Q8,-4 10,0" />
+                      <circle cx="0" cy="-5.5" r="0.8" fill="rgba(255,255,255,0.55)" stroke="none" />
+                    </g>
+
+                    {/* Bottom ornament — mirrored */}
+                    <g transform="translate(48, 84)" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8" strokeLinecap="round">
+                      <line x1="0" y1="0" x2="-10" y2="0" />
+                      <line x1="0" y1="0" x2="10" y2="0" />
+                      <path d="M-10,0 Q-8,4 -5,3 Q-3,2 0,4 Q3,2 5,3 Q8,4 10,0" />
+                      <circle cx="0" cy="5.5" r="0.8" fill="rgba(255,255,255,0.55)" stroke="none" />
+                    </g>
+
+                    {/* Thin dividing line between letters */}
+                    <line x1="48" y1="20" x2="48" y2="76" stroke="rgba(255,255,255,0.15)" strokeWidth="0.6" />
+
+                    {/* Diamond accent center */}
+                    <g transform="translate(48,52)">
+                      <rect x="-2.5" y="-2.5" width="5" height="5" transform="rotate(45)" fill="rgba(255,255,255,0.45)" />
+                    </g>
+                  </svg>
+
+                  {/* Amiri Arabic calligraphy letters */}
                   <div
                     style={{
                       position: "absolute",
-                      inset: 5,
-                      borderRadius: "50%",
-                      border: "1.5px solid rgba(255,255,255,0.2)",
-                      pointerEvents: "none",
+                      inset: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 4,
+                      paddingTop: 2,
                     }}
-                  />
+                  >
+                    {/* ح (Ha) — right letter in Arabic */}
+                    <span
+                      style={{
+                        fontFamily: "'Amiri', serif",
+                        fontSize: 30,
+                        fontWeight: 700,
+                        color: "white",
+                        lineHeight: 1,
+                        textShadow: "0 1px 6px rgba(0,0,0,0.3), 0 0 12px rgba(255,255,255,0.15)",
+                        letterSpacing: 0,
+                        direction: "rtl",
+                      }}
+                    >
+                      ح
+                    </span>
+                    <span style={{ width: 6 }} />
+                    {/* ي (Ya) — left letter in Arabic */}
+                    <span
+                      style={{
+                        fontFamily: "'Amiri', serif",
+                        fontSize: 30,
+                        fontWeight: 700,
+                        color: "white",
+                        lineHeight: 1,
+                        textShadow: "0 1px 6px rgba(0,0,0,0.3), 0 0 12px rgba(255,255,255,0.15)",
+                        letterSpacing: 0,
+                        direction: "rtl",
+                      }}
+                    >
+                      ي
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>

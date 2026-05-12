@@ -50,20 +50,29 @@ function Ornament() {
   );
 }
 
-// Flip countdown digit
+// Flip countdown digit — uses default AnimatePresence sync mode for reliable overlap animation
 function FlipDigit({ value, color }: { value: number; color: string }) {
   const str = String(value).padStart(2, "0");
+  const fontSize = "clamp(3.2rem, 10vw, 5.8rem)";
+  const height = "clamp(3.8rem, 11vw, 6.5rem)";
   return (
-    <div className="relative overflow-hidden" style={{ height: "clamp(3.8rem, 11vw, 6.5rem)" }}>
-      <AnimatePresence mode="popLayout" initial={false}>
+    <div style={{ position: "relative", overflow: "hidden", height, minWidth: "2.2ch", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <AnimatePresence initial={false}>
         <motion.span
           key={str}
-          className="font-serif font-light absolute inset-0 flex items-center justify-center leading-none"
-          style={{ fontSize: "clamp(3.5rem, 10vw, 6rem)", color }}
-          initial={{ y: -40, opacity: 0, filter: "blur(4px)" }}
-          animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-          exit={{ y: 40, opacity: 0, filter: "blur(4px)" }}
-          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            position: "absolute",
+            fontSize,
+            color,
+            fontFamily: "var(--font-serif)",
+            fontWeight: 300,
+            lineHeight: 1,
+            userSelect: "none",
+          }}
+          initial={{ y: "-110%", opacity: 0, filter: "blur(6px)" }}
+          animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+          exit={{ y: "110%", opacity: 0, filter: "blur(6px)" }}
+          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
         >
           {str}
         </motion.span>
@@ -76,8 +85,8 @@ function CountdownUnit({ value, label, color }: { value: number; label: string; 
   return (
     <div className="flex flex-col items-center px-2 md:px-6">
       <FlipDigit value={value} color={color} />
-      <div className="my-2 h-px w-8" style={{ background: color, opacity: 0.3 }} />
-      <span className="font-sans uppercase tracking-[0.28em] text-white/30" style={{ fontSize: "0.55rem" }}>{label}</span>
+      <div className="my-2 h-px w-8" style={{ background: color, opacity: 0.35 }} />
+      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.5)" }}>{label}</span>
     </div>
   );
 }
