@@ -149,25 +149,34 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                 transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
                 whileHover={!isOpening ? { scale: 1.06 } : {}}
               >
-                {/* Pulsing crimson outer glow — box-shadow is compositor-safe on mobile */}
-                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", boxShadow: "0 0 32px 14px rgba(160,15,50,0.35)", animation: "pulse 3s ease-in-out infinite", willChange: "opacity" }} />
-
                 {/* Spinning gold dashed ring outside the seal */}
                 <svg width="140" height="140" viewBox="0 0 140 140" style={{ position: "absolute", inset: 0, animation: "sealSpin 28s linear infinite", willChange: "transform" }} aria-hidden="true">
                   <circle cx="70" cy="70" r="67.5" fill="none" stroke="rgba(212,175,100,0.45)" strokeWidth="1" strokeDasharray="2 4" />
                 </svg>
 
-                {/* Seal body — relative container for absolute-positioned letters, clipped to circle */}
-                <div style={{ position: "relative", width: 140, height: 140, borderRadius: "50%", overflow: "hidden" }}>
+                {/* Seal body — clipped to circle with clip-path for iOS Safari reliability */}
+                <div style={{ position: "relative", width: 140, height: 140, borderRadius: "50%", overflow: "hidden", WebkitMaskImage: "-webkit-radial-gradient(white, black)" }}>
 
-                  {/* ── ORNAMENTAL SVG (no letters) ─────────────── */}
+                  {/* ── ORNAMENTAL SVG — shadow is inside SVG via feDropShadow so iOS Safari
+                      renders it against the actual circle shapes, not the bounding box ── */}
                   <svg
                     width="140" height="140" viewBox="0 0 140 140"
-                    style={{ position: "absolute", inset: 0, display: "block",
-                      filter: "drop-shadow(0 12px 32px rgba(140,10,40,0.7)) drop-shadow(0 3px 10px rgba(0,0,0,0.55))" }}
+                    style={{ position: "absolute", inset: 0, display: "block", overflow: "visible" }}
                     aria-hidden="true"
                   >
                     <defs>
+                      {/* Shadow filter — inside SVG so it follows circle shape, not bounding box */}
+                      <filter id="sealShadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="11" result="b1"/>
+                        <feOffset in="b1" dx="0" dy="10" result="o1"/>
+                        <feFlood floodColor="#8C0A28" floodOpacity="0.65" result="c1"/>
+                        <feComposite in="c1" in2="o1" operator="in" result="s1"/>
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b2"/>
+                        <feOffset in="b2" dx="0" dy="3" result="o2"/>
+                        <feFlood floodColor="#000000" floodOpacity="0.45" result="c2"/>
+                        <feComposite in="c2" in2="o2" operator="in" result="s2"/>
+                        <feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/><feMergeNode in="SourceGraphic"/></feMerge>
+                      </filter>
                       {/* Rich deep-wax radial gradient */}
                       <radialGradient id="waxBg" cx="30%" cy="20%" r="80%">
                         <stop offset="0%" stopColor="#E8607A" />
@@ -188,12 +197,11 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                       </radialGradient>
                     </defs>
 
-                    {/* Outer shadow ring */}
-                    <circle cx="70" cy="70" r="67" fill="rgba(0,0,0,0.35)" />
-                    {/* Main wax body */}
-                    <circle cx="70" cy="70" r="65" fill="url(#waxBg)" />
-                    {/* Convex gloss highlight */}
-                    <circle cx="70" cy="70" r="65" fill="url(#waxGloss)" />
+                    {/* Wax body group — shadow filter applied here so it tracks the circle, not the SVG box */}
+                    <g filter="url(#sealShadow)">
+                      <circle cx="70" cy="70" r="65" fill="url(#waxBg)" />
+                      <circle cx="70" cy="70" r="65" fill="url(#waxGloss)" />
+                    </g>
                     {/* Warm gold bloom behind letter zone */}
                     <circle cx="70" cy="70" r="50" fill="url(#goldBloom)" />
 
