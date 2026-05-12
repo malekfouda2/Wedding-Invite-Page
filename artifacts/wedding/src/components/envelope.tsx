@@ -137,10 +137,10 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                 transition={{ duration: 0.9, delay: 0.2, ease: [0.76, 0, 0.24, 1] }}
               />
 
-              {/* Wax seal */}
+              {/* Wax seal — centered via left/marginLeft to avoid transform conflict */}
               <motion.div
-                className="absolute z-[30] left-1/2 -translate-x-1/2"
-                style={{ top: "40%", translateX: "-50%" }}
+                className="absolute z-[30]"
+                style={{ top: "40%", left: "50%", marginLeft: -45 }}
                 animate={isOpening ? { scale: 0, opacity: 0, rotate: 15 } : { scale: 1, opacity: 1, rotate: 0 }}
                 transition={{ duration: 0.28, ease: [0.76, 0, 0.24, 1] }}
                 whileHover={!isOpening ? { scale: 1.08 } : {}}

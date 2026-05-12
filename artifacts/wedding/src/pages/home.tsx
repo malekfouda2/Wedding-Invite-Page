@@ -410,7 +410,7 @@ export default function Home() {
                     { value: timeLeft.days, label: "Days", color: "hsl(var(--primary))" },
                     { value: timeLeft.hours, label: "Hours", color: "hsl(var(--secondary))" },
                     { value: timeLeft.minutes, label: "Minutes", color: "hsl(var(--accent))" },
-                    { value: timeLeft.seconds, label: "Seconds", color: "hsl(var(--muted))" },
+                    { value: timeLeft.seconds, label: "Seconds", color: "hsl(44 55% 85%)" },
                   ].map((u, i) => (
                     <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
                       <CountdownUnit value={u.value} label={u.label} color={u.color} />
@@ -520,22 +520,58 @@ export default function Home() {
               </FadeUp>
 
               <FadeUp delay={0.1}>
-                {/* CUSTOMIZE: Replace iframe src with your Google Maps embed URL */}
+                {/* Venue placeholder — replace with actual details when confirmed */}
                 <div
-                  className="max-w-3xl mx-auto overflow-hidden"
-                  style={{ aspectRatio: "16/7", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 3 }}
+                  className="max-w-3xl mx-auto relative overflow-hidden"
+                  style={{
+                    aspectRatio: "16/7",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 4,
+                    background: "hsl(22 28% 9%)",
+                  }}
                 >
-                  <iframe
-                    title="Wedding Venue Map"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=35.5,30.0,36.5,31.5&layer=mapnik"
-                    className="w-full h-full"
-                    style={{ filter: "grayscale(40%) sepia(20%) brightness(0.82) hue-rotate(10deg)", border: "none" }}
-                    loading="lazy"
+                  {/* Subtle grid pattern */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+                      backgroundSize: "40px 40px",
+                    }}
                   />
+                  {/* Soft glow in center */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ background: "radial-gradient(ellipse 60% 60% at 50% 50%, hsl(var(--accent)/0.08) 0%, transparent 70%)" }}
+                  />
+                  {/* Pin icon + text */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                    <motion.div
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                    >
+                      <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
+                        <path
+                          d="M16 0C7.163 0 0 7.163 0 16c0 10 16 24 16 24S32 26 32 16C32 7.163 24.837 0 16 0z"
+                          fill="hsl(var(--primary))"
+                          opacity="0.8"
+                        />
+                        <circle cx="16" cy="16" r="6" fill="white" opacity="0.9" />
+                      </svg>
+                    </motion.div>
+                    <div className="flex flex-col items-center gap-2 text-center px-6">
+                      <p className="font-serif italic" style={{ fontSize: "clamp(1rem, 3vw, 1.25rem)", color: "hsl(44 50% 88%)", opacity: 0.75 }}>
+                        Venue to be announced
+                      </p>
+                      <p className="font-sans uppercase tracking-[0.3em]" style={{ fontSize: "0.52rem", color: "rgba(255,255,255,0.2)" }}>
+                        Details will be shared with guests shortly
+                      </p>
+                    </div>
+                  </div>
+                  {/* Decorative corner dots */}
+                  {[["6px","6px"],["6px","auto"],["auto","6px"],["auto","auto"]].map(([top, bottom, ], i) => (
+                    <div key={i} className="absolute w-1 h-1 rounded-full" style={{ top: top === "auto" ? undefined : top, bottom: top === "auto" ? "6px" : undefined, left: i < 2 ? "6px" : undefined, right: i >= 2 ? "6px" : undefined, background: "rgba(255,255,255,0.12)" }} />
+                  ))}
                 </div>
-                <p className="text-center font-sans mt-5 uppercase tracking-[0.3em]" style={{ fontSize: "0.5rem", color: "rgba(255,255,255,0.15)" }}>
-                  ✦ replace iframe src with venue location ✦
-                </p>
               </FadeUp>
             </section>
 
