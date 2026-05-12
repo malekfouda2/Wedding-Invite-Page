@@ -1,0 +1,13 @@
+uploads = []
+
+[[generated]]
+id = "Fi1m8rso9KyZTBvTI2H6G"
+uri = "file://artifacts/wedding/public/og-image.png"
+type = "image"
+title = "wedding og image"
+
+[[outputs]]
+id = "5NXN1PERJAEImYxXCZEsQ"
+uri = "file://artifacts/wedding/public/og-image.png"
+type = "image"
+title = "WhatsApp / Social Preview Image"
