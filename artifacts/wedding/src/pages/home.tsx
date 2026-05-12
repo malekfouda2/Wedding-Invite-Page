@@ -396,7 +396,7 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 2: COUNTDOWN ────────────────────────── */}
-            <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={{ background: "hsl(22 28% 12%)" }}>
+            <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={{ background: "linear-gradient(160deg, hsl(335 40% 10%) 0%, hsl(315 35% 13%) 100%)" }}>
               {/* Decorative glow orbs */}
               <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.1) 0%, transparent 70%)" }} />
               <div className="absolute bottom-0 right-1/4 w-48 h-48 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--secondary)/0.09) 0%, transparent 70%)" }} />
@@ -507,8 +507,8 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 4: VENUE ────────────────────────────── */}
-            <section id="venue" className="py-28 px-6 relative" style={{ background: "hsl(22 28% 12%)" }}>
-              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--accent)/0.09) 0%, transparent 70%)" }} />
+            <section id="venue" className="py-28 px-6 relative" style={{ background: "linear-gradient(160deg, hsl(162 35% 9%) 0%, hsl(180 30% 12%) 100%)" }}>
+              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(162 60% 40% / 0.1) 0%, transparent 70%)" }} />
 
               <FadeUp className="text-center mb-12">
                 <p className="font-sans uppercase tracking-[0.42em] mb-3" style={{ fontSize: "0.58rem", color: "hsl(var(--accent))", opacity: 0.85 }}>
@@ -527,7 +527,7 @@ export default function Home() {
                     style={{
                       border: "1px solid rgba(212,175,100,0.18)",
                       borderRadius: 6,
-                      background: "hsl(22 28% 9%)",
+                      background: "hsl(162 35% 6%)",
                     }}
                   >
                     {/* Top accent line */}
