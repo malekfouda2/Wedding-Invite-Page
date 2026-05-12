@@ -50,43 +50,20 @@ function Ornament() {
   );
 }
 
-// Flip countdown digit — uses default AnimatePresence sync mode for reliable overlap animation
-function FlipDigit({ value, color }: { value: number; color: string }) {
-  const str = String(value).padStart(2, "0");
-  const fontSize = "clamp(3.2rem, 10vw, 5.8rem)";
-  const height = "clamp(3.8rem, 11vw, 6.5rem)";
-  return (
-    <div style={{ position: "relative", overflow: "hidden", height, minWidth: "2.2ch", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <AnimatePresence initial={false}>
-        <motion.span
-          key={str}
-          style={{
-            position: "absolute",
-            fontSize,
-            color,
-            fontFamily: "var(--font-serif)",
-            fontWeight: 300,
-            lineHeight: 1,
-            userSelect: "none",
-          }}
-          initial={{ y: "-110%", opacity: 0, filter: "blur(6px)" }}
-          animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
-          exit={{ y: "110%", opacity: 0, filter: "blur(6px)" }}
-          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {str}
-        </motion.span>
-      </AnimatePresence>
-    </div>
-  );
-}
-
 function CountdownUnit({ value, label, color }: { value: number; label: string; color: string }) {
+  const str = String(value).padStart(2, "0");
   return (
-    <div className="flex flex-col items-center px-2 md:px-6">
-      <FlipDigit value={value} color={color} />
-      <div className="my-2 h-px w-8" style={{ background: color, opacity: 0.35 }} />
-      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.5)" }}>{label}</span>
+    <div className="flex flex-col items-center px-3 md:px-8">
+      <span
+        className="font-serif font-light"
+        style={{ fontSize: "clamp(3rem, 10vw, 5.5rem)", color, lineHeight: 1, display: "block" }}
+      >
+        {str}
+      </span>
+      <div className="my-3 h-px w-8" style={{ background: color, opacity: 0.35 }} />
+      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.5)" }}>
+        {label}
+      </span>
     </div>
   );
 }
@@ -413,20 +390,18 @@ export default function Home() {
                 </h2>
               </FadeUp>
 
-              <FadeUp delay={0.12}>
-                <div className="max-w-2xl mx-auto flex justify-center">
-                  {[
-                    { value: timeLeft.days, label: "Days", color: "hsl(var(--primary))" },
-                    { value: timeLeft.hours, label: "Hours", color: "hsl(var(--secondary))" },
-                    { value: timeLeft.minutes, label: "Minutes", color: "hsl(var(--accent))" },
-                    { value: timeLeft.seconds, label: "Seconds", color: "hsl(44 55% 85%)" },
-                  ].map((u, i) => (
-                    <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                      <CountdownUnit value={u.value} label={u.label} color={u.color} />
-                    </div>
-                  ))}
-                </div>
-              </FadeUp>
+              <div className="max-w-2xl mx-auto flex justify-center">
+                {[
+                  { value: timeLeft.days, label: "Days", color: "hsl(var(--primary))" },
+                  { value: timeLeft.hours, label: "Hours", color: "hsl(var(--secondary))" },
+                  { value: timeLeft.minutes, label: "Minutes", color: "hsl(var(--accent))" },
+                  { value: timeLeft.seconds, label: "Seconds", color: "hsl(44 55% 85%)" },
+                ].map((u, i) => (
+                  <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+                    <CountdownUnit value={u.value} label={u.label} color={u.color} />
+                  </div>
+                ))}
+              </div>
 
               <FadeUp delay={0.22} className="text-center mt-16">
                 <p className="font-serif italic" style={{ fontSize: "1.05rem", color: "hsl(44 40% 80%)", opacity: 0.45 }}>

@@ -203,45 +203,60 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                     </g>
                   </svg>
 
-                  {/* Amiri Arabic calligraphy letters */}
+                  {/* Amiri Arabic calligraphy letters — ح first (left), ي second (right) */}
                   <div
+                    dir="ltr"
                     style={{
                       position: "absolute",
                       inset: 0,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: 4,
-                      paddingTop: 2,
+                      gap: 0,
+                      direction: "ltr",
+                      unicodeBidi: "isolate",
                     }}
                   >
-                    {/* ح (Ha) — right letter in Arabic */}
+                    {/* ح — left position, slightly higher */}
                     <span
                       style={{
                         fontFamily: "'Amiri', serif",
-                        fontSize: 30,
+                        fontSize: 38,
                         fontWeight: 700,
+                        fontStyle: "italic",
                         color: "white",
                         lineHeight: 1,
-                        textShadow: "0 1px 6px rgba(0,0,0,0.3), 0 0 12px rgba(255,255,255,0.15)",
-                        letterSpacing: 0,
-                        direction: "rtl",
+                        textShadow: "0 2px 8px rgba(0,0,0,0.35), 0 0 18px rgba(255,255,255,0.2)",
+                        transform: "translateY(-3px) rotate(-5deg)",
+                        display: "inline-block",
                       }}
                     >
                       ح
                     </span>
-                    <span style={{ width: 6 }} />
-                    {/* ي (Ya) — left letter in Arabic */}
+                    {/* Small decorative diamond between letters */}
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: 6,
+                        height: 6,
+                        background: "rgba(255,255,255,0.5)",
+                        transform: "rotate(45deg) translateY(1px)",
+                        margin: "0 5px",
+                        flexShrink: 0,
+                      }}
+                    />
+                    {/* ي — right position, slightly lower */}
                     <span
                       style={{
                         fontFamily: "'Amiri', serif",
-                        fontSize: 30,
+                        fontSize: 38,
                         fontWeight: 700,
+                        fontStyle: "italic",
                         color: "white",
                         lineHeight: 1,
-                        textShadow: "0 1px 6px rgba(0,0,0,0.3), 0 0 12px rgba(255,255,255,0.15)",
-                        letterSpacing: 0,
-                        direction: "rtl",
+                        textShadow: "0 2px 8px rgba(0,0,0,0.35), 0 0 18px rgba(255,255,255,0.2)",
+                        transform: "translateY(3px) rotate(4deg)",
+                        display: "inline-block",
                       }}
                     >
                       ي
