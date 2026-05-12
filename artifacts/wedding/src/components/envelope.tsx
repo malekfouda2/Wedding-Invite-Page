@@ -138,130 +138,160 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
               {/* Wax seal — centered via left/marginLeft to avoid transform conflict */}
               <motion.div
                 className="absolute z-[30]"
-                style={{ top: "40%", left: "50%", marginLeft: -45 }}
+                style={{ top: "40%", left: "50%", marginLeft: -60 }}
                 animate={isOpening ? { scale: 0, opacity: 0, rotate: 15 } : { scale: 1, opacity: 1, rotate: 0 }}
                 transition={{ duration: 0.28, ease: [0.76, 0, 0.24, 1] }}
-                whileHover={!isOpening ? { scale: 1.08 } : {}}
+                whileHover={!isOpening ? { scale: 1.07 } : {}}
               >
-                {/* Seal outer glow */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: -8,
-                    borderRadius: "50%",
-                    background: "radial-gradient(circle, rgba(201,32,96,0.2) 0%, transparent 70%)",
-                    filter: "blur(6px)",
-                    animation: "pulse 2.5s ease-in-out infinite",
-                  }}
-                />
-                {/* Main seal circle */}
-                <div
-                  className="relative flex items-center justify-center overflow-hidden"
-                  style={{
-                    width: 96,
-                    height: 96,
-                    borderRadius: "50%",
-                    background: "radial-gradient(circle at 38% 30%, #ED6E9A, #C92060 52%, #8D1340)",
-                    boxShadow:
-                      "0 0 0 2px #9E1748, 0 0 0 5px rgba(158,23,72,0.3), 0 10px 32px rgba(201,32,96,0.55), inset 0 -5px 14px rgba(0,0,0,0.28), inset 0 3px 8px rgba(255,255,255,0.2)",
-                  }}
-                >
-                  {/* Artistic calligraphy SVG composition */}
+                {/* Pulsing outer glow */}
+                <div style={{ position: "absolute", inset: -14, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,32,96,0.3) 0%, transparent 65%)", filter: "blur(12px)", animation: "pulse 2.8s ease-in-out infinite" }} />
+
+                {/* Seal wrapper — relative so letters can use absolute positioning */}
+                <div style={{ position: "relative", width: 120, height: 120 }}>
+
+                  {/* Slowly-spinning gold dashed outer ring */}
+                  <svg width="120" height="120" viewBox="0 0 120 120" style={{ position: "absolute", inset: 0, animation: "sealSpin 22s linear infinite" }} aria-hidden="true">
+                    <circle cx="60" cy="60" r="57" fill="none" stroke="rgba(212,175,100,0.5)" strokeWidth="1" strokeDasharray="3 4.5" />
+                  </svg>
+
+                  {/* Main ornamental SVG — everything except the letters */}
                   <svg
-                    viewBox="0 0 96 96"
-                    width="96"
-                    height="96"
-                    style={{ position: "absolute", inset: 0 }}
-                    aria-label="ح ي"
+                    width="120"
+                    height="120"
+                    viewBox="0 0 120 120"
+                    style={{ position: "absolute", inset: 0, display: "block", filter: "drop-shadow(0 10px 28px rgba(201,32,96,0.65)) drop-shadow(0 2px 8px rgba(0,0,0,0.45))" }}
+                    aria-hidden="true"
                   >
-                    {/* Inner decorative ring */}
-                    <circle cx="48" cy="48" r="43" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
-                    <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+                    <defs>
+                      <radialGradient id="sealBg" cx="36%" cy="26%" r="72%">
+                        <stop offset="0%" stopColor="#F285B4" />
+                        <stop offset="45%" stopColor="#C42060" />
+                        <stop offset="100%" stopColor="#730A30" />
+                      </radialGradient>
+                      <radialGradient id="sealGloss" cx="38%" cy="22%" r="50%">
+                        <stop offset="0%" stopColor="rgba(255,255,255,0.28)" />
+                        <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+                      </radialGradient>
+                    </defs>
 
-                    {/* Top ornament — delicate crown flourish */}
-                    <g transform="translate(48, 12)" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8" strokeLinecap="round">
-                      <line x1="0" y1="0" x2="-10" y2="0" />
-                      <line x1="0" y1="0" x2="10" y2="0" />
-                      <path d="M-10,0 Q-8,-4 -5,-3 Q-3,-2 0,-4 Q3,-2 5,-3 Q8,-4 10,0" />
-                      <circle cx="0" cy="-5.5" r="0.8" fill="rgba(255,255,255,0.55)" stroke="none" />
+                    {/* Base crimson circle */}
+                    <circle cx="60" cy="60" r="56" fill="url(#sealBg)" />
+                    {/* Gloss highlight */}
+                    <circle cx="60" cy="60" r="56" fill="url(#sealGloss)" />
+
+                    {/* Concentric embossed rings */}
+                    <circle cx="60" cy="60" r="53" fill="none" stroke="rgba(0,0,0,0.18)" strokeWidth="1.5" />
+                    <circle cx="60" cy="60" r="51" fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
+                    <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(212,175,100,0.4)" strokeWidth="0.9" />
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+
+                    {/* 12 gold petal marks around the gold ring */}
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const deg = i * 30;
+                      const rad = (deg * Math.PI) / 180;
+                      const r = 48;
+                      const x = 60 + r * Math.sin(rad);
+                      const y = 60 - r * Math.cos(rad);
+                      return i % 3 === 0
+                        ? <rect key={i} x={x - 2} y={y - 2} width="4" height="4" transform={`rotate(45 ${x} ${y})`} fill="rgba(212,175,100,0.85)" />
+                        : <circle key={i} cx={x} cy={y} r="1" fill="rgba(212,175,100,0.5)" />;
+                    })}
+
+                    {/* Top crown — 3-peak arch */}
+                    <g transform="translate(60,17)" stroke="rgba(212,175,100,0.9)" strokeWidth="1" strokeLinecap="round" fill="none">
+                      <line x1="-15" y1="0" x2="15" y2="0" />
+                      <path d="M-15,0 Q-12,-4 -8,-3 Q-5,-2 0,-6 Q5,-2 8,-3 Q12,-4 15,0" />
+                      <circle cx="0" cy="-8.5" r="1.5" fill="rgba(212,175,100,0.9)" stroke="none" />
+                      <circle cx="-15" cy="0" r="1.2" fill="rgba(212,175,100,0.7)" stroke="none" />
+                      <circle cx="15" cy="0" r="1.2" fill="rgba(212,175,100,0.7)" stroke="none" />
                     </g>
 
-                    {/* Bottom ornament — mirrored */}
-                    <g transform="translate(48, 84)" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8" strokeLinecap="round">
-                      <line x1="0" y1="0" x2="-10" y2="0" />
-                      <line x1="0" y1="0" x2="10" y2="0" />
-                      <path d="M-10,0 Q-8,4 -5,3 Q-3,2 0,4 Q3,2 5,3 Q8,4 10,0" />
-                      <circle cx="0" cy="5.5" r="0.8" fill="rgba(255,255,255,0.55)" stroke="none" />
+                    {/* Bottom mirror crown */}
+                    <g transform="translate(60,103)" stroke="rgba(212,175,100,0.9)" strokeWidth="1" strokeLinecap="round" fill="none">
+                      <line x1="-15" y1="0" x2="15" y2="0" />
+                      <path d="M-15,0 Q-12,4 -8,3 Q-5,2 0,6 Q5,2 8,3 Q12,4 15,0" />
+                      <circle cx="0" cy="8.5" r="1.5" fill="rgba(212,175,100,0.9)" stroke="none" />
+                      <circle cx="-15" cy="0" r="1.2" fill="rgba(212,175,100,0.7)" stroke="none" />
+                      <circle cx="15" cy="0" r="1.2" fill="rgba(212,175,100,0.7)" stroke="none" />
                     </g>
 
-                    {/* Thin dividing line between letters */}
-                    <line x1="48" y1="20" x2="48" y2="76" stroke="rgba(255,255,255,0.15)" strokeWidth="0.6" />
+                    {/* Left vine flourish */}
+                    <g transform="translate(12,60)" stroke="rgba(212,175,100,0.7)" strokeWidth="0.9" strokeLinecap="round" fill="none">
+                      <path d="M0,-10 C-5,-7 -6,-2 -3,1 C-6,4 -5,8 0,10" />
+                      <circle cx="-5" cy="0" r="1" fill="rgba(212,175,100,0.7)" stroke="none" />
+                    </g>
 
-                    {/* Diamond accent center */}
-                    <g transform="translate(48,52)">
-                      <rect x="-2.5" y="-2.5" width="5" height="5" transform="rotate(45)" fill="rgba(255,255,255,0.45)" />
+                    {/* Right vine flourish */}
+                    <g transform="translate(108,60)" stroke="rgba(212,175,100,0.7)" strokeWidth="0.9" strokeLinecap="round" fill="none">
+                      <path d="M0,-10 C5,-7 6,-2 3,1 C6,4 5,8 0,10" />
+                      <circle cx="5" cy="0" r="1" fill="rgba(212,175,100,0.7)" stroke="none" />
+                    </g>
+
+                    {/* Vertical divider with tapered ends */}
+                    <line x1="60" y1="26" x2="60" y2="94" stroke="rgba(255,255,255,0.16)" strokeWidth="0.7" />
+                    <circle cx="60" cy="26" r="1.2" fill="rgba(212,175,100,0.6)" />
+                    <circle cx="60" cy="94" r="1.2" fill="rgba(212,175,100,0.6)" />
+
+                    {/* Center jewel — stacked diamonds */}
+                    <g transform="translate(60,60)">
+                      <rect x="-4.5" y="-4.5" width="9" height="9" transform="rotate(45)" fill="rgba(212,175,100,0.95)" />
+                      <rect x="-2.8" y="-2.8" width="5.6" height="5.6" transform="rotate(45)" fill="rgba(255,240,190,0.85)" />
+                      <rect x="-1.2" y="-1.2" width="2.4" height="2.4" transform="rotate(45)" fill="rgba(255,255,255,0.9)" />
                     </g>
                   </svg>
 
-                  {/* Amiri Arabic calligraphy letters — ح first (left), ي second (right) */}
-                  <div
-                    dir="ltr"
+                  {/* ════════════════════════════════════════════
+                      LETTERS — CSS absolute positioning so bidi
+                      algorithm cannot touch them. ح is always
+                      left (25% = 30px center). ي is always right
+                      (75% = 90px center). No flex, no text flow.
+                      ════════════════════════════════════════════ */}
+
+                  {/* ح — Hussam — left half center */}
+                  <span
+                    aria-label="ح"
                     style={{
                       position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 0,
-                      direction: "ltr",
-                      unicodeBidi: "isolate",
+                      left: "25%",
+                      top: "48%",
+                      transform: "translate(-50%, -60%) rotate(-6deg)",
+                      fontFamily: "'Amiri', serif",
+                      fontSize: 46,
+                      fontWeight: 700,
+                      fontStyle: "italic",
+                      color: "white",
+                      lineHeight: 1,
+                      textShadow: "0 2px 10px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.18)",
+                      userSelect: "none",
+                      pointerEvents: "none",
+                      zIndex: 2,
                     }}
                   >
-                    {/* ح — left position, slightly higher */}
-                    <span
-                      style={{
-                        fontFamily: "'Amiri', serif",
-                        fontSize: 38,
-                        fontWeight: 700,
-                        fontStyle: "italic",
-                        color: "white",
-                        lineHeight: 1,
-                        textShadow: "0 2px 8px rgba(0,0,0,0.35), 0 0 18px rgba(255,255,255,0.2)",
-                        transform: "translateY(-3px) rotate(-5deg)",
-                        display: "inline-block",
-                      }}
-                    >
-                      ح
-                    </span>
-                    {/* Small decorative diamond between letters */}
-                    <span
-                      style={{
-                        display: "inline-block",
-                        width: 6,
-                        height: 6,
-                        background: "rgba(255,255,255,0.5)",
-                        transform: "rotate(45deg) translateY(1px)",
-                        margin: "0 5px",
-                        flexShrink: 0,
-                      }}
-                    />
-                    {/* ي — right position, slightly lower */}
-                    <span
-                      style={{
-                        fontFamily: "'Amiri', serif",
-                        fontSize: 38,
-                        fontWeight: 700,
-                        fontStyle: "italic",
-                        color: "white",
-                        lineHeight: 1,
-                        textShadow: "0 2px 8px rgba(0,0,0,0.35), 0 0 18px rgba(255,255,255,0.2)",
-                        transform: "translateY(3px) rotate(4deg)",
-                        display: "inline-block",
-                      }}
-                    >
-                      ي
-                    </span>
-                  </div>
+                    ح
+                  </span>
+
+                  {/* ي — Yara — right half center */}
+                  <span
+                    aria-label="ي"
+                    style={{
+                      position: "absolute",
+                      left: "75%",
+                      top: "52%",
+                      transform: "translate(-50%, -40%) rotate(5deg)",
+                      fontFamily: "'Amiri', serif",
+                      fontSize: 46,
+                      fontWeight: 700,
+                      fontStyle: "italic",
+                      color: "white",
+                      lineHeight: 1,
+                      textShadow: "0 2px 10px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.18)",
+                      userSelect: "none",
+                      pointerEvents: "none",
+                      zIndex: 2,
+                    }}
+                  >
+                    ي
+                  </span>
                 </div>
               </motion.div>
             </motion.div>
@@ -302,6 +332,10 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
             @keyframes pulse {
               0%, 100% { opacity: 0.6; transform: scale(1); }
               50% { opacity: 1; transform: scale(1.1); }
+            }
+            @keyframes sealSpin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
             }
           `}</style>
         </motion.div>
