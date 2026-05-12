@@ -517,63 +517,90 @@ export default function Home() {
                 <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(44 50% 91%)", lineHeight: 1 }}>
                   The Venue
                 </h2>
-                <p className="font-serif italic mt-5" style={{ fontSize: "1.05rem", color: "hsl(44 30% 68%)", opacity: 0.65 }}>
-                  Location details coming soon — stay tuned
-                </p>
               </FadeUp>
 
               <FadeUp delay={0.1}>
-                {/* Venue placeholder — replace with actual details when confirmed */}
-                <div
-                  className="max-w-3xl mx-auto relative overflow-hidden"
-                  style={{
-                    aspectRatio: "16/7",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 4,
-                    background: "hsl(22 28% 9%)",
-                  }}
-                >
-                  {/* Subtle grid pattern */}
+                <div className="max-w-lg mx-auto">
+                  {/* Venue card */}
                   <div
-                    className="absolute inset-0 pointer-events-none"
+                    className="relative overflow-hidden"
                     style={{
-                      backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-                      backgroundSize: "40px 40px",
+                      border: "1px solid rgba(212,175,100,0.18)",
+                      borderRadius: 6,
+                      background: "hsl(22 28% 9%)",
                     }}
-                  />
-                  {/* Soft glow in center */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{ background: "radial-gradient(ellipse 60% 60% at 50% 50%, hsl(var(--accent)/0.08) 0%, transparent 70%)" }}
-                  />
-                  {/* Pin icon + text */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                    <motion.div
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                    >
-                      <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
-                        <path
-                          d="M16 0C7.163 0 0 7.163 0 16c0 10 16 24 16 24S32 26 32 16C32 7.163 24.837 0 16 0z"
-                          fill="hsl(var(--primary))"
-                          opacity="0.8"
+                  >
+                    {/* Top accent line */}
+                    <div style={{ height: 2, background: "linear-gradient(90deg, transparent, hsl(var(--accent)/0.6), transparent)" }} />
+
+                    {/* Corner ornaments */}
+                    {[{top:"10px",left:"10px"},{top:"10px",right:"10px"},{bottom:"10px",left:"10px"},{bottom:"10px",right:"10px"}].map((pos, i) => (
+                      <svg key={i} width="14" height="14" viewBox="0 0 14 14" style={{ position:"absolute", ...pos, opacity: 0.35 }} aria-hidden="true">
+                        <path d="M0,0 L14,0 M0,0 L0,14" stroke="rgba(212,175,100,0.9)" strokeWidth="1.2" fill="none"
+                          transform={i===1?"scale(-1,1) translate(-14,0)":i===2?"scale(1,-1) translate(0,-14)":i===3?"scale(-1,-1) translate(-14,-14)":""}
                         />
-                        <circle cx="16" cy="16" r="6" fill="white" opacity="0.9" />
                       </svg>
-                    </motion.div>
-                    <div className="flex flex-col items-center gap-2 text-center px-6">
-                      <p className="font-serif italic" style={{ fontSize: "clamp(1rem, 3vw, 1.25rem)", color: "hsl(44 50% 88%)", opacity: 0.75 }}>
-                        Venue to be announced
+                    ))}
+
+                    <div className="px-8 py-10 flex flex-col items-center gap-6 text-center">
+                      {/* Animated pin */}
+                      <motion.div
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
+                      >
+                        <svg width="30" height="38" viewBox="0 0 30 38" fill="none" aria-hidden="true">
+                          <path d="M15 0C6.716 0 0 6.716 0 15c0 9.375 15 23 15 23S30 24.375 30 15C30 6.716 23.284 0 15 0z" fill="hsl(var(--primary))" opacity="0.85"/>
+                          <circle cx="15" cy="15" r="5.5" fill="white" opacity="0.92"/>
+                        </svg>
+                      </motion.div>
+
+                      {/* Venue name */}
+                      <div>
+                        <p className="font-sans uppercase tracking-[0.35em] mb-2" style={{ fontSize: "0.55rem", color: "hsl(var(--accent))", opacity: 0.7 }}>
+                          Celebration Venue
+                        </p>
+                        <h3 className="font-script" style={{ fontSize: "clamp(2.4rem, 8vw, 3.2rem)", color: "hsl(44 50% 91%)", lineHeight: 1.1 }}>
+                          The Vine
+                        </h3>
+                        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, hsl(var(--accent)/0.4), transparent)", marginTop: "1rem" }} />
+                      </div>
+
+                      {/* Date reminder */}
+                      <p className="font-serif italic" style={{ fontSize: "0.95rem", color: "hsl(44 30% 68%)", opacity: 0.7 }}>
+                        Thursday, June 11, 2026
                       </p>
-                      <p className="font-sans uppercase tracking-[0.3em]" style={{ fontSize: "0.52rem", color: "rgba(255,255,255,0.2)" }}>
-                        Details will be shared with guests shortly
-                      </p>
+
+                      {/* Get Directions button */}
+                      <a
+                        href="https://maps.app.goo.gl/HZEF9xn8pG4TPLw79?g_st=iw"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          padding: "0.75rem 2rem",
+                          border: "1px solid hsl(var(--accent)/0.5)",
+                          borderRadius: 3,
+                          color: "hsl(44 50% 88%)",
+                          textDecoration: "none",
+                          background: "hsl(var(--accent)/0.08)",
+                          transition: "background 0.2s, border-color 0.2s",
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(var(--accent)/0.16)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(var(--accent)/0.8)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(var(--accent)/0.08)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(var(--accent)/0.5)"; }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                          <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span className="font-sans uppercase tracking-[0.25em]" style={{ fontSize: "0.6rem" }}>Get Directions</span>
+                      </a>
                     </div>
+
+                    {/* Bottom accent line */}
+                    <div style={{ height: 2, background: "linear-gradient(90deg, transparent, hsl(var(--accent)/0.6), transparent)" }} />
                   </div>
-                  {/* Decorative corner dots */}
-                  {[["6px","6px"],["6px","auto"],["auto","6px"],["auto","auto"]].map(([top, bottom, ], i) => (
-                    <div key={i} className="absolute w-1 h-1 rounded-full" style={{ top: top === "auto" ? undefined : top, bottom: top === "auto" ? "6px" : undefined, left: i < 2 ? "6px" : undefined, right: i >= 2 ? "6px" : undefined, background: "rgba(255,255,255,0.12)" }} />
-                  ))}
                 </div>
               </FadeUp>
             </section>
