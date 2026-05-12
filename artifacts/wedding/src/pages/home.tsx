@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from "framer-motion";
 import Envelope from "@/components/envelope";
 import RsvpForm from "@/components/rsvp-form";
+import FloatingElements from "@/components/floating-elements";
 
 // @ts-ignore
 import floralFrame from "@assets/WhatsApp_Image_2026-05-10_at_12.05.16_(1)_1778550657210.jpeg";
@@ -255,6 +256,9 @@ export default function Home() {
 
   return (
     <div className="min-h-[100dvh] w-full overflow-x-hidden" style={{ background: "hsl(var(--background))" }}>
+
+      {/* ── FLOATING FLOWERS & HEARTS ───────────────────────────── */}
+      <FloatingElements />
 
       {/* ── ENVELOPE SCENE ──────────────────────────────────────── */}
       <AnimatePresence>
