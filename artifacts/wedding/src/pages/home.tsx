@@ -73,8 +73,52 @@ const SECTIONS = [
   { id: "countdown", label: "Countdown" },
   { id: "timeline", label: "Timeline" },
   { id: "venue", label: "Venue" },
+  { id: "dresscode", label: "Dress Code" },
   { id: "rsvp", label: "RSVP" },
 ];
+
+const PALETTE = [
+  { color: "#C91255", label: "Deep Rose" },
+  { color: "#EE88B4", label: "Blush" },
+  { color: "#D44A18", label: "Coral" },
+  { color: "#E8A86A", label: "Peach" },
+  { color: "#D9B820", label: "Gold" },
+  { color: "#82A85A", label: "Sage" },
+  { color: "#4E7230", label: "Olive" },
+];
+
+function BrushSwatch({ color, label, rotate = 0 }: { color: string; label: string; rotate?: number }) {
+  return (
+    <div className="flex flex-col items-center gap-2.5" style={{ transform: `rotate(${rotate}deg)` }}>
+      <svg viewBox="0 0 96 40" width="86" height="36" style={{ filter: `drop-shadow(0 3px 8px ${color}55)` }}>
+        <path
+          d="M 5,18 C 14,6 36,3 56,7 C 74,10 88,7 93,14 C 88,26 72,33 54,30 C 34,33 13,29 5,22 Z"
+          fill={color}
+        />
+        <path
+          d="M 18,14 C 30,9 50,8 66,11 C 78,13 87,11 91,15 C 86,17 76,18 66,17 C 50,18 30,18 18,15 Z"
+          fill="rgba(255,255,255,0.22)"
+        />
+        <path
+          d="M 10,22 C 20,20 38,20 54,21 C 66,21 80,20 90,22 C 82,26 68,28 54,27 C 38,28 20,27 10,24 Z"
+          fill="rgba(0,0,0,0.08)"
+        />
+      </svg>
+      <span
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "0.52rem",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          color: "hsl(22 18% 35%)",
+          transform: `rotate(${-rotate}deg)`,
+        }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
 
 const timelineEvents = [
   {
@@ -559,7 +603,71 @@ export default function Home() {
               </FadeUp>
             </section>
 
-            {/* ── SECTION 5: RSVP ─────────────────────────────── */}
+            {/* ── SECTION 5: DRESS CODE ───────────────────────── */}
+            <section id="dresscode" className="py-28 px-6 relative overflow-hidden" style={{ background: "hsl(44 45% 96%)" }}>
+              {/* Soft background texture — faint radial gradients */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 right-0 w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(201,18,85,0.06) 0%, transparent 70%)", filter: "blur(40px)" }} />
+                <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(78,114,48,0.07) 0%, transparent 70%)", filter: "blur(36px)" }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(217,184,32,0.05) 0%, transparent 70%)", filter: "blur(50px)" }} />
+              </div>
+
+              <div className="relative z-10 max-w-lg mx-auto">
+                {/* Heading */}
+                <FadeUp className="text-center mb-5">
+                  <p className="font-sans uppercase tracking-[0.45em] mb-4" style={{ fontSize: "0.54rem", color: "hsl(var(--primary))", opacity: 0.75 }}>
+                    wedding attire
+                  </p>
+                  <h2 className="font-script" style={{ fontSize: "clamp(3rem, 11vw, 5.2rem)", color: "hsl(22 35% 20%)", lineHeight: 1.05 }}>
+                    Dress Code
+                  </h2>
+                </FadeUp>
+
+                {/* Subtitle */}
+                <FadeUp delay={0.1} className="text-center mb-14">
+                  <p className="font-serif" style={{ fontSize: "clamp(0.88rem, 2.6vw, 1.05rem)", color: "hsl(22 18% 38%)", lineHeight: 1.85, maxWidth: "34ch", margin: "0 auto" }}>
+                    We'd love for your outfit to complement our
+                    celebration — any shade from our palette is
+                    a beautiful choice.
+                  </p>
+                </FadeUp>
+
+                {/* Colour swatches — row 1: 4 swatches */}
+                <FadeUp delay={0.18}>
+                  <div className="flex justify-center items-end gap-4 mb-6">
+                    {PALETTE.slice(0, 4).map((p, i) => (
+                      <BrushSwatch key={p.color} color={p.color} label={p.label} rotate={[-2, 1.5, -1, 2][i]} />
+                    ))}
+                  </div>
+                </FadeUp>
+
+                {/* Colour swatches — row 2: 3 swatches, centered */}
+                <FadeUp delay={0.26}>
+                  <div className="flex justify-center items-end gap-4 mb-14">
+                    {PALETTE.slice(4).map((p, i) => (
+                      <BrushSwatch key={p.color} color={p.color} label={p.label} rotate={[1, -2, 1.5][i]} />
+                    ))}
+                  </div>
+                </FadeUp>
+
+                {/* Divider */}
+                <FadeUp delay={0.32} className="flex items-center gap-4 mb-14">
+                  <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(22 25% 70%))" }} />
+                  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" transform="rotate(45 8 8)" fill="hsl(22 25% 70%)" /></svg>
+                  <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, hsl(22 25% 70%))" }} />
+                </FadeUp>
+
+                {/* Note */}
+                <FadeUp delay={0.38} className="text-center">
+                  <p className="font-serif italic" style={{ fontSize: "0.92rem", color: "hsl(22 18% 52%)", lineHeight: 1.7 }}>
+                    "Wear what makes you feel beautiful —<br />
+                    your presence is our greatest joy."
+                  </p>
+                </FadeUp>
+              </div>
+            </section>
+
+            {/* ── SECTION 6: RSVP ─────────────────────────────── */}
             <section id="rsvp" className="relative py-28 px-6 overflow-hidden" style={{ background: "hsl(var(--background))" }}>
               <img
                 src={floralFrame}
