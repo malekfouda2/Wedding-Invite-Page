@@ -52,22 +52,22 @@
 }
 
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
+  --button-outline: hsl(335 45% 34% / 0.16);
+  --badge-outline: hsl(335 45% 34% / 0.08);
   --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  --elevate-1: hsl(335 45% 34% / 0.04);
+  --elevate-2: hsl(335 45% 34% / 0.1);
 
   --background: 44 45% 96%;
-  --foreground: 22 30% 16%;
+  --foreground: 332 42% 25%;
 
   --border: 30 25% 86%;
   --card: 44 50% 98%;
-  --card-foreground: 22 30% 16%;
+  --card-foreground: 332 42% 25%;
   --card-border: 30 25% 88%;
 
   --popover: 44 50% 98%;
-  --popover-foreground: 22 30% 16%;
+  --popover-foreground: 332 42% 25%;
   --popover-border: 30 25% 88%;
 
   /* Vibrant hot pink */
@@ -80,11 +80,11 @@
 
   /* Sage green */
   --muted: 96 22% 55%;
-  --muted-foreground: 22 30% 16%;
+  --muted-foreground: 332 42% 25%;
 
   /* Warm gold */
   --accent: 43 88% 48%;
-  --accent-foreground: 22 30% 16%;
+  --accent-foreground: 332 42% 25%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;

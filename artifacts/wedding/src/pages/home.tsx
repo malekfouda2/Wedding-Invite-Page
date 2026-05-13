@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from "framer-motion";
+import { ExternalLink, MapPin } from "lucide-react";
 import Envelope from "@/components/envelope";
 import RsvpForm from "@/components/rsvp-form";
 import FloatingElements from "@/components/floating-elements";
@@ -63,7 +64,7 @@ function CountdownUnit({ value, label, color }: { value: number; label: string; 
         {str}
       </span>
       <div className="my-3 h-px w-8" style={{ background: color, opacity: 0.35 }} />
-      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "rgba(0,0,0,0.4)" }}>
+      <span className="font-sans uppercase tracking-[0.28em]" style={{ fontSize: "0.55rem", color: "hsl(332 35% 36%)" }}>
         {label}
       </span>
     </div>
@@ -89,10 +90,25 @@ const PALETTE = [
   { color: "#4E7230", label: "Olive" },
 ];
 
+const gradientSectionBackground: React.CSSProperties = {
+  backgroundImage:
+    "linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.06) 42%, rgba(255,255,255,0.34) 100%), url('/pink-gradient-background.jpeg')",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+};
+
+const tropicalInk = "hsl(332 45% 25%)";
+const hibiscusInk = "hsl(340 78% 42%)";
+const coralInk = "hsl(16 78% 43%)";
+const palmInk = "hsl(142 38% 28%)";
+const mangoInk = "hsl(38 86% 38%)";
+const softInk = "hsl(332 35% 36%)";
+
 function BrushSwatch({ color, label, rotate = 0 }: { color: string; label: string; rotate?: number }) {
   return (
-    <div className="flex flex-col items-center gap-2.5" style={{ transform: `rotate(${rotate}deg)` }}>
-      <svg viewBox="0 0 96 40" width="86" height="36" style={{ filter: `drop-shadow(0 3px 8px ${color}55)` }}>
+    <div className="flex min-w-0 flex-col items-center gap-2.5" style={{ transform: `rotate(${rotate}deg)` }}>
+      <svg viewBox="0 0 96 40" className="h-9 w-full max-w-[86px]" style={{ filter: `drop-shadow(0 3px 8px ${color}55)` }}>
         <path
           d="M 5,18 C 14,6 36,3 56,7 C 74,10 88,7 93,14 C 88,26 72,33 54,30 C 34,33 13,29 5,22 Z"
           fill={color}
@@ -103,17 +119,19 @@ function BrushSwatch({ color, label, rotate = 0 }: { color: string; label: strin
         />
         <path
           d="M 10,22 C 20,20 38,20 54,21 C 66,21 80,20 90,22 C 82,26 68,28 54,27 C 38,28 20,27 10,24 Z"
-          fill="rgba(0,0,0,0.08)"
+          fill="rgba(155,52,74,0.12)"
         />
       </svg>
       <span
         style={{
           fontFamily: "var(--font-sans)",
-          fontSize: "0.52rem",
-          letterSpacing: "0.22em",
+          fontSize: "clamp(0.48rem, 1.6vw, 0.52rem)",
+          letterSpacing: "0.18em",
           textTransform: "uppercase",
-          color: "hsl(22 18% 35%)",
+          color: tropicalInk,
           transform: `rotate(${-rotate}deg)`,
+          overflowWrap: "anywhere",
+          textAlign: "center",
         }}
       >
         {label}
@@ -164,8 +182,8 @@ function SectionNav({ active }: { active: string }) {
             data-testid={`nav-dot-${s.id}`}
           >
             <span
-              className="font-sans uppercase tracking-[0.2em] text-foreground/0 group-hover:text-foreground/40 transition-all duration-300"
-              style={{ fontSize: "0.5rem" }}
+              className="font-sans uppercase tracking-[0.2em] transition-all duration-300"
+              style={{ fontSize: "0.5rem", color: isActive ? hibiscusInk : "hsl(332 35% 36% / 0.66)" }}
             >
               {s.label}
             </span>
@@ -174,7 +192,7 @@ function SectionNav({ active }: { active: string }) {
               animate={{
                 width: isActive ? 20 : 6,
                 height: isActive ? 6 : 6,
-                background: isActive ? "hsl(var(--primary))" : "hsl(var(--foreground)/0.2)",
+                background: isActive ? "hsl(var(--primary))" : "hsl(332 35% 36% / 0.28)",
               }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             />
@@ -240,37 +258,26 @@ export default function Home() {
         {!opened && (
           <motion.div
             key="envelope"
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center"
-            style={{ background: "hsl(var(--background))" }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
+            style={{ background: "linear-gradient(180deg, #F6F2ED 0%, #EFE9E2 100%)" }}
             exit={{ opacity: 0, transition: { duration: 0.7 } }}
           >
-            {/* Very faint floral backdrop */}
             <div
               className="pointer-events-none absolute inset-0"
-              style={{ backgroundImage: `url(${floralFrame})`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.055 }}
+              style={{
+                backgroundImage: `url(${floralFrame})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: 0.025,
+              }}
             />
-
-            {/* Ambient light orbs */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full" style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.07) 0%, transparent 70%)" }} />
-              <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full" style={{ background: "radial-gradient(circle, hsl(var(--secondary)/0.06) 0%, transparent 70%)" }} />
-            </div>
-
-            <div className="relative z-10 flex flex-col items-center gap-8">
-              <motion.div
-                className="flex flex-col items-center gap-1"
-                initial={{ opacity: 0, y: -16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <p className="font-sans uppercase tracking-[0.48em] text-foreground/25" style={{ fontSize: "0.56rem" }}>
-                  a letter for you
-                </p>
-                <p className="font-script" style={{ fontSize: "clamp(2.4rem, 8vw, 3.6rem)", color: "hsl(var(--primary))", lineHeight: 1.05 }}>
-                  Hussam &amp; Yara
-                </p>
-              </motion.div>
-
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: "radial-gradient(ellipse 70% 60% at 50% 44%, rgba(255,255,255,0.45), transparent 68%)",
+              }}
+            />
+            <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-5">
               <Envelope onOpen={() => setOpened(true)} />
             </div>
           </motion.div>
@@ -309,8 +316,8 @@ export default function Home() {
                 transition={{ duration: 1.3, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 <motion.p
-                  className="font-sans uppercase tracking-[0.5em] text-foreground/35 mb-5"
-                  style={{ fontSize: "0.58rem" }}
+                  className="font-sans uppercase tracking-[0.42em] mb-5"
+                  style={{ fontSize: "0.58rem", color: softInk }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.8 }}
@@ -342,10 +349,10 @@ export default function Home() {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.9, delay: 1.2 }}
                 >
-                  <p className="font-serif italic text-foreground/55 leading-relaxed" style={{ fontSize: "clamp(1rem, 3.2vw, 1.22rem)" }}>
+                  <p className="font-serif italic leading-relaxed" style={{ fontSize: "clamp(1rem, 3.2vw, 1.22rem)", color: softInk }}>
                     invite you to witness the moment
                   </p>
-                  <p className="font-serif text-foreground/75 font-medium" style={{ fontSize: "clamp(1rem, 3.2vw, 1.2rem)" }}>
+                  <p className="font-serif font-medium" style={{ fontSize: "clamp(1rem, 3.2vw, 1.2rem)", color: tropicalInk }}>
                     love becomes forever
                   </p>
                 </motion.div>
@@ -357,17 +364,17 @@ export default function Home() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8, delay: 1.35 }}
                 >
-                  <p className="font-serif font-semibold text-foreground/80" style={{ fontSize: "clamp(1.1rem, 3.5vw, 1.4rem)" }}>
+                  <p className="font-serif font-semibold" style={{ fontSize: "clamp(1.1rem, 3.5vw, 1.4rem)", color: tropicalInk }}>
                     Thursday, 11 June 2026
                   </p>
-                  <p className="font-sans uppercase tracking-[0.32em] text-foreground/30" style={{ fontSize: "0.56rem" }}>
+                  <p className="font-sans uppercase tracking-[0.32em]" style={{ fontSize: "0.56rem", color: softInk }}>
                     6 o&apos;clock in the evening
                   </p>
                 </motion.div>
 
                 <motion.p
-                  className="font-sans uppercase tracking-[0.38em] text-foreground/25"
-                  style={{ fontSize: "0.52rem" }}
+                  className="font-sans uppercase tracking-[0.28em]"
+                  style={{ fontSize: "0.52rem", color: hibiscusInk, opacity: 0.82 }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 1.5 }}
@@ -390,17 +397,13 @@ export default function Home() {
                       <path d="M1 1L11 12L21 1" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
                     </svg>
                   </motion.div>
-                  <p className="font-sans uppercase tracking-[0.35em] text-foreground/20" style={{ fontSize: "0.5rem" }}>scroll</p>
+                  <p className="font-sans uppercase tracking-[0.35em]" style={{ fontSize: "0.5rem", color: softInk, opacity: 0.72 }}>scroll</p>
                 </motion.div>
               </motion.div>
             </section>
 
             {/* ── SECTION 2: COUNTDOWN ────────────────────────── */}
-            <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={{ background: "linear-gradient(160deg, hsl(340 85% 95%) 0%, hsl(320 70% 93%) 100%)" }}>
-              {/* Decorative glow orbs */}
-              <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--primary)/0.1) 0%, transparent 70%)" }} />
-              <div className="absolute bottom-0 right-1/4 w-48 h-48 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(var(--secondary)/0.09) 0%, transparent 70%)" }} />
-
+            <section id="countdown" className="py-28 px-6 overflow-hidden relative" style={gradientSectionBackground}>
               <FadeUp className="text-center mb-16">
                 <p className="font-sans uppercase tracking-[0.4em] mb-4" style={{ fontSize: "0.58rem", color: "hsl(var(--primary))", opacity: 0.75 }}>
                   the moment we&apos;ve been dreaming of
@@ -417,29 +420,29 @@ export default function Home() {
                   { value: timeLeft.minutes, label: "Minutes", color: "hsl(var(--accent))" },
                   { value: timeLeft.seconds, label: "Seconds", color: "hsl(var(--secondary))" },
                 ].map((u, i) => (
-                  <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid rgba(0,0,0,0.08)" : "none" }}>
+                  <div key={i} className="flex-1" style={{ borderRight: i < 3 ? "1px solid hsl(332 35% 36% / 0.18)" : "none" }}>
                     <CountdownUnit value={u.value} label={u.label} color={u.color} />
                   </div>
                 ))}
               </div>
 
               <FadeUp delay={0.22} className="text-center mt-16">
-                <p className="font-serif italic" style={{ fontSize: "1.05rem", color: "hsl(var(--foreground))", opacity: 0.45 }}>
+                <p className="font-serif italic" style={{ fontSize: "1.05rem", color: softInk, opacity: 0.82 }}>
                   Every second brings us closer to forever
                 </p>
               </FadeUp>
             </section>
 
             {/* ── SECTION 3: TIMELINE ─────────────────────────── */}
-            <section id="timeline" className="py-28 px-6 relative overflow-hidden" style={{ background: "hsl(44 45% 96%)" }}>
-              <ParallaxFloral className="absolute -bottom-12 -right-12 w-56 opacity-[0.1]" style={{ transform: "rotate(180deg)" }} />
-              <ParallaxFloral className="absolute -top-12 -left-12 w-44 opacity-[0.08]" style={{}} />
+            <section id="timeline" className="py-24 md:py-28 px-6 relative overflow-hidden" style={gradientSectionBackground}>
+              <ParallaxFloral className="absolute -bottom-8 right-0 hidden w-48 opacity-[0.1] md:block md:-bottom-12 md:-right-12 md:w-56" style={{ transform: "rotate(180deg)" }} />
+              <ParallaxFloral className="absolute -top-8 left-0 hidden w-40 opacity-[0.08] md:block md:-top-12 md:-left-12 md:w-44" style={{}} />
 
               <FadeUp className="text-center mb-20">
                 <p className="font-sans uppercase tracking-[0.4em] mb-2" style={{ fontSize: "0.58rem", color: "hsl(var(--secondary))", opacity: 0.9 }}>
                   an evening to remember
                 </p>
-                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(var(--foreground))", lineHeight: 1 }}>
+                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: hibiscusInk, lineHeight: 1 }}>
                   The Day Unfolds
                 </h2>
               </FadeUp>
@@ -469,8 +472,8 @@ export default function Home() {
                             </p>
                           ) : (
                             <div>
-                              <p className="font-serif font-semibold text-foreground/85 group-hover:text-foreground transition-colors duration-200" style={{ fontSize: "clamp(1rem, 3vw, 1.22rem)" }}>{event.title}</p>
-                              <p className="font-sans text-foreground/40 mt-1 group-hover:text-foreground/60 transition-colors duration-200" style={{ fontSize: "0.74rem" }}>{event.description}</p>
+                              <p className="font-serif font-semibold transition-colors duration-200" style={{ fontSize: "clamp(1rem, 3vw, 1.22rem)", color: tropicalInk }}>{event.title}</p>
+                              <p className="font-sans mt-1 transition-colors duration-200" style={{ fontSize: "0.74rem", color: softInk }}>{event.description}</p>
                             </div>
                           )}
                         </div>
@@ -479,7 +482,7 @@ export default function Home() {
                         <div className="relative z-10 flex-shrink-0">
                           <motion.div
                             className="w-[18px] h-[18px] rounded-full"
-                            style={{ background: event.color, boxShadow: `0 0 0 4px hsl(var(--background)), 0 0 0 6px ${event.color}33` }}
+                            style={{ background: event.color, boxShadow: `0 0 0 4px rgba(255,255,255,0.72), 0 0 0 6px ${event.color}33` }}
                             whileHover={{ scale: 1.5 }}
                             transition={{ duration: 0.25 }}
                           />
@@ -489,8 +492,8 @@ export default function Home() {
                         <div className={`flex-1 ${isLeft ? "pl-10" : "text-right pr-10 order-first"}`}>
                           {isLeft ? (
                             <div>
-                              <p className="font-serif font-semibold text-foreground/85 group-hover:text-foreground transition-colors duration-200" style={{ fontSize: "clamp(1rem, 3vw, 1.22rem)" }}>{event.title}</p>
-                              <p className="font-sans text-foreground/40 mt-1 group-hover:text-foreground/60 transition-colors duration-200" style={{ fontSize: "0.74rem" }}>{event.description}</p>
+                              <p className="font-serif font-semibold transition-colors duration-200" style={{ fontSize: "clamp(1rem, 3vw, 1.22rem)", color: tropicalInk }}>{event.title}</p>
+                              <p className="font-sans mt-1 transition-colors duration-200" style={{ fontSize: "0.74rem", color: softInk }}>{event.description}</p>
                             </div>
                           ) : (
                             <p className="font-script leading-none transition-all duration-300 group-hover:opacity-100 opacity-85"
@@ -507,14 +510,12 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 4: VENUE ────────────────────────────── */}
-            <section id="venue" className="py-28 px-6 relative" style={{ background: "linear-gradient(160deg, hsl(162 50% 93%) 0%, hsl(180 45% 91%) 100%)" }}>
-              <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsl(162 60% 40% / 0.08) 0%, transparent 70%)" }} />
-
+            <section id="venue" className="py-24 md:py-28 px-6 relative" style={gradientSectionBackground}>
               <FadeUp className="text-center mb-12">
-                <p className="font-sans uppercase tracking-[0.42em] mb-3" style={{ fontSize: "0.58rem", color: "hsl(var(--accent))", opacity: 0.85 }}>
+                <p className="font-sans uppercase tracking-[0.42em] mb-3" style={{ fontSize: "0.58rem", color: coralInk, opacity: 0.9 }}>
                   where love finds its home
                 </p>
-                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(162 40% 22%)", lineHeight: 1 }}>
+                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: palmInk, lineHeight: 1 }}>
                   The Venue
                 </h2>
               </FadeUp>
@@ -525,7 +526,7 @@ export default function Home() {
                   <div
                     className="relative overflow-hidden"
                     style={{
-                      border: "1px solid rgba(0,0,0,0.09)",
+                      border: "1px solid hsl(332 35% 36% / 0.16)",
                       borderRadius: 6,
                       background: "hsl(0 0% 100% / 0.75)",
                       backdropFilter: "blur(8px)",
@@ -557,7 +558,7 @@ export default function Home() {
 
                       {/* Venue name */}
                       <div>
-                        <p className="font-sans uppercase tracking-[0.35em] mb-2" style={{ fontSize: "0.55rem", color: "hsl(162 40% 30%)", opacity: 0.8 }}>
+                        <p className="font-sans uppercase tracking-[0.28em] mb-2" style={{ fontSize: "0.55rem", color: palmInk, opacity: 0.92 }}>
                           Celebration Venue
                         </p>
                         <h3 className="font-script" style={{ fontSize: "clamp(2.4rem, 8vw, 3.2rem)", color: "hsl(var(--primary))", lineHeight: 1.1 }}>
@@ -567,7 +568,7 @@ export default function Home() {
                       </div>
 
                       {/* Date reminder */}
-                      <p className="font-serif italic" style={{ fontSize: "0.95rem", color: "hsl(var(--foreground))", opacity: 0.5 }}>
+                      <p className="font-serif italic" style={{ fontSize: "0.95rem", color: softInk, opacity: 0.86 }}>
                         Thursday, June 11, 2026
                       </p>
 
@@ -583,7 +584,7 @@ export default function Home() {
                           padding: "0.75rem 2rem",
                           border: "1px solid hsl(162 40% 35% / 0.4)",
                           borderRadius: 3,
-                          color: "hsl(162 40% 25%)",
+                          color: palmInk,
                           textDecoration: "none",
                           background: "hsl(162 50% 40% / 0.08)",
                           transition: "background 0.2s, border-color 0.2s",
@@ -591,11 +592,9 @@ export default function Home() {
                         onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(162 50% 40% / 0.16)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(162 40% 35% / 0.7)"; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "hsl(162 50% 40% / 0.08)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "hsl(162 40% 35% / 0.4)"; }}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                          <circle cx="12" cy="10" r="3"/>
-                        </svg>
+                        <MapPin size={14} strokeWidth={2} aria-hidden="true" />
                         <span className="font-sans uppercase tracking-[0.25em]" style={{ fontSize: "0.6rem" }}>Get Directions</span>
+                        <ExternalLink size={13} strokeWidth={2} aria-hidden="true" />
                       </a>
                     </div>
 
@@ -607,28 +606,21 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 5: DRESS CODE ───────────────────────── */}
-            <section id="dresscode" className="py-28 px-6 relative overflow-hidden" style={{ background: "hsl(44 45% 96%)" }}>
-              {/* Soft background texture — faint radial gradients */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(201,18,85,0.08) 0%, transparent 70%)" }} />
-                <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(78,114,48,0.09) 0%, transparent 70%)" }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(217,184,32,0.06) 0%, transparent 70%)" }} />
-              </div>
-
+            <section id="dresscode" className="py-24 md:py-28 px-6 relative overflow-hidden" style={gradientSectionBackground}>
               <div className="relative z-10 max-w-lg mx-auto">
                 {/* Heading */}
                 <FadeUp className="text-center mb-5">
                   <p className="font-sans uppercase tracking-[0.45em] mb-4" style={{ fontSize: "0.54rem", color: "hsl(var(--primary))", opacity: 0.75 }}>
                     wedding attire
                   </p>
-                  <h2 className="font-script" style={{ fontSize: "clamp(3rem, 11vw, 5.2rem)", color: "hsl(22 35% 20%)", lineHeight: 1.05 }}>
+                  <h2 className="font-script" style={{ fontSize: "clamp(3rem, 11vw, 5.2rem)", color: hibiscusInk, lineHeight: 1.05 }}>
                     Dress Code
                   </h2>
                 </FadeUp>
 
                 {/* Subtitle */}
                 <FadeUp delay={0.1} className="text-center mb-14">
-                  <p className="font-serif" style={{ fontSize: "clamp(0.88rem, 2.6vw, 1.05rem)", color: "hsl(22 18% 38%)", lineHeight: 1.85, maxWidth: "34ch", margin: "0 auto" }}>
+                  <p className="font-serif" style={{ fontSize: "clamp(0.88rem, 2.6vw, 1.05rem)", color: softInk, lineHeight: 1.85, maxWidth: "34ch", margin: "0 auto" }}>
                     We'd love for your outfit to complement our
                     celebration — any shade from our palette is
                     a beautiful choice.
@@ -637,32 +629,32 @@ export default function Home() {
 
                 {/* Colour swatches — row 1: 4 swatches */}
                 <FadeUp delay={0.18}>
-                  <div className="flex justify-center items-end gap-4 mb-6">
+                  <div className="mx-auto mb-8 grid max-w-[420px] grid-cols-2 justify-items-center gap-x-8 gap-y-8 sm:grid-cols-4 sm:gap-x-4 md:max-w-none">
                     {PALETTE.slice(0, 4).map((p, i) => (
-                      <BrushSwatch key={p.color} color={p.color} label={p.label} rotate={[-2, 1.5, -1, 2][i]} />
+                      <BrushSwatch key={p.color} color={p.color} label={p.label} rotate={[-1, 1, -0.5, 1.25][i]} />
                     ))}
                   </div>
                 </FadeUp>
 
                 {/* Colour swatches — row 2: 3 swatches, centered */}
                 <FadeUp delay={0.26}>
-                  <div className="flex justify-center items-end gap-4 mb-14">
+                  <div className="mx-auto mb-14 grid max-w-[320px] grid-cols-3 justify-items-center gap-x-6 gap-y-8">
                     {PALETTE.slice(4).map((p, i) => (
-                      <BrushSwatch key={p.color} color={p.color} label={p.label} rotate={[1, -2, 1.5][i]} />
+                      <BrushSwatch key={p.color} color={p.color} label={p.label} rotate={[0.75, -1, 1][i]} />
                     ))}
                   </div>
                 </FadeUp>
 
                 {/* Divider */}
                 <FadeUp delay={0.32} className="flex items-center gap-4 mb-14">
-                  <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(22 25% 70%))" }} />
-                  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" transform="rotate(45 8 8)" fill="hsl(22 25% 70%)" /></svg>
-                  <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, hsl(22 25% 70%))" }} />
+                  <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${mangoInk})` }} />
+                  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="4" y="4" width="8" height="8" transform="rotate(45 8 8)" fill={mangoInk} /></svg>
+                  <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${mangoInk})` }} />
                 </FadeUp>
 
                 {/* Note */}
                 <FadeUp delay={0.38} className="text-center">
-                  <p className="font-serif italic" style={{ fontSize: "0.92rem", color: "hsl(22 18% 52%)", lineHeight: 1.7 }}>
+                  <p className="font-serif italic" style={{ fontSize: "0.92rem", color: palmInk, lineHeight: 1.7 }}>
                     "Wear what makes you feel beautiful —<br />
                     your presence is our greatest joy."
                   </p>
@@ -671,25 +663,18 @@ export default function Home() {
             </section>
 
             {/* ── SECTION 6: RSVP ─────────────────────────────── */}
-            <section id="rsvp" className="relative py-28 px-6 overflow-hidden" style={{ background: "hsl(var(--background))" }}>
-              <img
-                src={floralFrame}
-                alt=""
-                aria-hidden
-                className="pointer-events-none absolute inset-0 w-full h-full object-cover object-center"
-                style={{ opacity: 0.14 }}
-              />
+            <section id="rsvp" className="relative py-28 px-6 overflow-hidden" style={gradientSectionBackground}>
               <div
                 className="absolute inset-0 pointer-events-none"
-                style={{ background: "radial-gradient(ellipse 72% 82% at 50% 50%, hsl(var(--background)/0.97) 38%, hsl(var(--background)/0.65) 100%)" }}
+                style={{ background: "radial-gradient(ellipse 72% 82% at 50% 50%, rgba(255,255,255,0.5) 18%, rgba(255,255,255,0.14) 100%)" }}
               />
               <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(var(--primary)/0.2), transparent)" }} />
 
               <FadeUp className="relative z-10 text-center mb-12">
-                <p className="font-sans uppercase tracking-[0.42em] mb-3" style={{ fontSize: "0.58rem", color: "hsl(var(--primary))", opacity: 0.75 }}>
+                <p className="font-sans uppercase tracking-[0.32em] mb-3" style={{ fontSize: "0.58rem", color: "hsl(var(--primary))", opacity: 0.86 }}>
                   seal your seat at our celebration
                 </p>
-                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: "hsl(var(--foreground))", lineHeight: 1 }}>
+                <h2 className="font-script" style={{ fontSize: "clamp(2.8rem, 9vw, 5rem)", color: hibiscusInk, lineHeight: 1 }}>
                   Will You Join Us?
                 </h2>
               </FadeUp>
@@ -701,7 +686,7 @@ export default function Home() {
                     background: "hsl(var(--card)/0.96)",
                     border: "1px solid hsl(var(--primary)/0.1)",
                     borderRadius: 3,
-                    boxShadow: "0 32px 90px rgba(0,0,0,0.07), 0 8px 28px rgba(201,35,96,0.07)",
+                    boxShadow: "0 32px 90px hsl(332 45% 25% / 0.1), 0 8px 28px rgba(201,35,96,0.07)",
                   }}
                 >
                   <RsvpForm />
@@ -710,24 +695,24 @@ export default function Home() {
             </section>
 
             {/* ── FOOTER ──────────────────────────────────────── */}
-            <footer className="py-24 px-6 text-center relative overflow-hidden" style={{ background: "hsl(var(--primary))" }}>
+            <footer className="py-24 px-6 text-center relative overflow-hidden" style={gradientSectionBackground}>
               <div
                 className="absolute inset-0 pointer-events-none"
                 style={{ backgroundImage: `url(${floralFrame})`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.07 }}
               />
               {/* Top & bottom decorative lines */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-white/20" />
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-white/20" />
+              <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(var(--primary)/0.28), transparent)" }} />
+              <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: "linear-gradient(to right, transparent, hsl(var(--primary)/0.24), transparent)" }} />
 
               <div className="relative z-10">
-                <p className="font-sans uppercase tracking-[0.5em] text-white/40 mb-4" style={{ fontSize: "0.52rem" }}>
+                <p className="font-sans uppercase tracking-[0.38em] mb-4" style={{ fontSize: "0.52rem", color: "hsl(var(--primary))", opacity: 0.72 }}>
                   forever starts here
                 </p>
-                <p className="font-script text-white" style={{ fontSize: "clamp(2.8rem, 8vw, 4.5rem)", lineHeight: 1 }}>
+                <p className="font-script" style={{ fontSize: "clamp(2.8rem, 8vw, 4.5rem)", lineHeight: 1, color: "hsl(var(--primary))" }}>
                   Hussam &amp; Yara
                 </p>
                 <Ornament />
-                <p className="font-sans uppercase tracking-[0.45em] text-white/35 mt-3" style={{ fontSize: "0.55rem" }}>
+                <p className="font-sans uppercase tracking-[0.36em] mt-3" style={{ fontSize: "0.55rem", color: softInk, opacity: 0.82 }}>
                   11 · VI · MMXXVI
                 </p>
               </div>

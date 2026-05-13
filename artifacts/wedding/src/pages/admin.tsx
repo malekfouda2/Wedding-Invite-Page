@@ -121,7 +121,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     <div className="min-h-screen p-6 md:p-10" style={{ background: "hsl(var(--background))" }}>
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
-        <div className="flex items-end justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-sans uppercase tracking-[0.3em] text-foreground/35 mb-1" style={{ fontSize: "0.58rem" }}>
               admin
@@ -165,7 +165,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
         {/* Table */}
         <div
-          className="rounded-[2px] overflow-hidden"
+          className="rounded-[2px] overflow-x-auto"
           style={{ border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }}
         >
           {isLoading ? (
@@ -173,7 +173,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               Loading...
             </p>
           ) : (
-            <Table>
+            <Table className="min-w-[720px]">
               <TableHeader>
                 <TableRow style={{ background: "hsl(var(--primary)/0.04)" }}>
                   {["Guest Name", "Status", "+1", "+1 Name", "Submitted"].map((h) => (

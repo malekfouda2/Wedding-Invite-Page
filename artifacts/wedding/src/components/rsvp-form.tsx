@@ -26,6 +26,7 @@ type FormValues = z.infer<typeof rsvpSchema>;
 
 export default function RsvpForm() {
   const [submitted, setSubmitted] = useState<"yes" | "no" | null>(null);
+  const [submitError, setSubmitError] = useState("");
   const submitRsvp = useSubmitRsvp();
 
   const form = useForm<FormValues>({
@@ -38,6 +39,7 @@ export default function RsvpForm() {
 
   const onSubmit = (data: FormValues) => {
     const isAttending = data.attending === "yes";
+    setSubmitError("");
     submitRsvp.mutate(
       {
         data: {
@@ -49,6 +51,7 @@ export default function RsvpForm() {
       },
       {
         onSuccess: () => setSubmitted(isAttending ? "yes" : "no"),
+        onError: () => setSubmitError("We could not send your reply. Please try again."),
       }
     );
   };
@@ -78,7 +81,7 @@ export default function RsvpForm() {
           <p className="font-script mb-1" style={{ fontSize: "2rem", color: "hsl(var(--primary))", lineHeight: 1.1 }}>
             {submitted === "yes" ? "We cannot wait!" : "We will miss you"}
           </p>
-          <p className="font-sans text-foreground/45 tracking-wide" style={{ fontSize: "0.75rem" }}>
+          <p className="font-sans tracking-wide" style={{ fontSize: "0.75rem", color: "hsl(332 35% 36%)" }}>
             {submitted === "yes"
               ? "Your reply has been received. See you on June 11th."
               : "Thank you for letting us know. You are in our hearts."}
@@ -97,20 +100,22 @@ export default function RsvpForm() {
           name="attending"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-sans uppercase tracking-[0.25em] text-foreground/50 block mb-4" style={{ fontSize: "0.62rem" }}>
+              <FormLabel className="font-sans uppercase tracking-[0.25em] block mb-4" style={{ fontSize: "0.62rem", color: "hsl(332 35% 36%)" }}>
                 Will you be joining us?
               </FormLabel>
               <FormControl>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Attendance">
                   {(["yes", "no"] as const).map((val) => {
                     const selected = field.value === val;
                     return (
                       <button
                         key={val}
                         type="button"
+                        role="radio"
+                        aria-checked={selected}
                         data-testid={`radio-attend-${val}`}
                         onClick={() => field.onChange(val)}
-                        className="relative py-4 px-4 rounded-[2px] transition-all duration-300 text-left"
+                        className="relative min-h-[5.5rem] py-4 px-4 rounded-[2px] transition-all duration-300 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         style={{
                           border: selected
                             ? "1px solid hsl(var(--primary)/0.6)"
@@ -124,7 +129,7 @@ export default function RsvpForm() {
                           className="font-serif block"
                           style={{
                             fontSize: "1.15rem",
-                            color: selected ? "hsl(var(--primary))" : "hsl(var(--foreground)/0.6)",
+                            color: selected ? "hsl(var(--primary))" : "hsl(332 42% 30%)",
                           }}
                         >
                           {val === "yes" ? "Joyfully Accept" : "Regretfully Decline"}
@@ -162,7 +167,7 @@ export default function RsvpForm() {
                 name="guestName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-sans uppercase tracking-[0.22em] text-foreground/45" style={{ fontSize: "0.6rem" }}>
+                    <FormLabel className="font-sans uppercase tracking-[0.22em]" style={{ fontSize: "0.6rem", color: "hsl(332 35% 36%)" }}>
                       Your Full Name
                     </FormLabel>
                     <FormControl>
@@ -182,15 +187,16 @@ export default function RsvpForm() {
               {/* Plus one toggle */}
               <button
                 type="button"
+                aria-pressed={hasPlusOne}
                 data-testid="toggle-plus-one"
                 onClick={() => form.setValue("hasPlusOne", !hasPlusOne)}
-                className="w-full py-3 px-4 rounded-[2px] flex items-center justify-between transition-all duration-200"
+                className="w-full py-3 px-4 rounded-[2px] flex items-center justify-between gap-4 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                 style={{
                   border: hasPlusOne ? "1px solid hsl(var(--primary)/0.5)" : "1px solid hsl(var(--border))",
                   background: hasPlusOne ? "hsl(var(--primary)/0.04)" : "transparent",
                 }}
               >
-                <span className="font-sans text-foreground/60 uppercase tracking-[0.2em]" style={{ fontSize: "0.65rem" }}>
+                <span className="font-sans uppercase tracking-[0.2em]" style={{ fontSize: "0.65rem", color: "hsl(332 42% 30%)" }}>
                   Bringing a guest?
                 </span>
                 <div
@@ -217,7 +223,7 @@ export default function RsvpForm() {
                       name="plusOneName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-sans uppercase tracking-[0.22em] text-foreground/45" style={{ fontSize: "0.6rem" }}>
+                    <FormLabel className="font-sans uppercase tracking-[0.22em]" style={{ fontSize: "0.6rem", color: "hsl(332 35% 36%)" }}>
                             Guest&apos;s Name
                           </FormLabel>
                           <FormControl>
@@ -240,6 +246,12 @@ export default function RsvpForm() {
           )}
         </AnimatePresence>
 
+        {submitError && (
+          <p className="font-sans text-destructive text-center" style={{ fontSize: "0.72rem" }}>
+            {submitError}
+          </p>
+        )}
+
         <button
           type="submit"
           data-testid="button-submit-rsvp"
@@ -248,7 +260,7 @@ export default function RsvpForm() {
           style={{
             fontSize: "0.7rem",
             background: attending ? "hsl(var(--primary))" : "transparent",
-            color: attending ? "white" : "hsl(var(--foreground)/0.4)",
+            color: attending ? "hsl(var(--primary-foreground))" : "hsl(332 35% 36% / 0.72)",
             border: attending ? "1px solid hsl(var(--primary))" : "1px solid hsl(var(--border))",
           }}
         >
