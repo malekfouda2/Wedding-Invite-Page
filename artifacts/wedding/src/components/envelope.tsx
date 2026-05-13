@@ -1,13 +1,39 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 
-
 type Phase = "idle" | "opening" | "done";
+
+// Catmull-Rom smooth scalloped path for wax seal edge
+function makeSealPath(cx: number, cy: number, outerR: number, innerR: number, bumps: number): string {
+  const pts: [number, number][] = [];
+  const total = bumps * 2;
+  for (let i = 0; i < total; i++) {
+    const a = (i / total) * Math.PI * 2 - Math.PI / 2;
+    const r = i % 2 === 0 ? outerR : innerR;
+    pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+  }
+  const n = pts.length;
+  let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n];
+    const p1 = pts[i];
+    const p2 = pts[(i + 1) % n];
+    const p3 = pts[(i + 2) % n];
+    const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const cp1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const cp2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d + " Z";
+}
+
+// 14 gentle bumps — matches the pearlescent scalloped wax seal in the references
+const SEAL_PATH = makeSealPath(65, 65, 62, 55, 14);
 
 export default function Envelope({ onOpen }: { onOpen: () => void }) {
   const [phase, setPhase] = useState<Phase>("idle");
 
-  // 3D tilt on hover
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [7, -7]), { damping: 25, stiffness: 180 });
@@ -45,7 +71,7 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
           onClick={handleClick}
           exit={{ opacity: 0, y: 80, scale: 0.94, transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] } }}
         >
-          {/* 3D tilt wrapper — no preserve-3d to avoid iOS Safari z-index stacking bugs */}
+          {/* 3D tilt wrapper */}
           <motion.div
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -88,7 +114,7 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
               </p>
             </motion.div>
 
-            {/* Envelope body */}
+            {/* ── ENVELOPE BODY ── */}
             <motion.div
               className="relative overflow-visible"
               style={{ width: "min(380px, 90vw)", aspectRatio: "1.65/1", zIndex: 10 }}
@@ -96,7 +122,7 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Base */}
+              {/* Base — cream linen */}
               <div
                 className="absolute inset-0 rounded-[3px]"
                 style={{
@@ -111,15 +137,15 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
               {/* Bottom flap */}
               <div className="absolute inset-0" style={{ clipPath: "polygon(0 100%, 50% 53%, 100% 100%)", background: "#E0D5BF" }} />
 
-              {/* Paper texture lines */}
+              {/* Paper texture */}
               <div
                 className="absolute inset-0 rounded-[3px] pointer-events-none"
                 style={{
-                  background: "repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0,0,0,0.015) 24px, rgba(0,0,0,0.015) 25px)",
+                  background: "repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0,0,0,0.012) 24px, rgba(0,0,0,0.012) 25px)",
                 }}
               />
 
-              {/* Top flap — rotates back */}
+              {/* Top flap — rotates back on open */}
               <motion.div
                 className="absolute top-0 left-0 right-0"
                 style={{
@@ -135,218 +161,87 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
                 transition={{ duration: 0.9, delay: 0.2, ease: [0.76, 0, 0.24, 1] }}
               />
 
-              {/* ══════════════════════════════════════════════════
-                  WAX SEAL — completely redesigned
-                  Arabic RTL reading order: ح (Hussam) is FIRST
-                  so it sits on the RIGHT. ي (Yara) is SECOND
-                  so it sits on the LEFT.
-                  Letters use fixed left/right CSS — bidi-proof.
-                  ══════════════════════════════════════════════════ */}
+              {/* ── WAX SEAL ─────────────────────────────────── */}
               <motion.div
                 className="absolute z-[30]"
-                style={{ top: "40%", left: "50%", marginLeft: -70 }}
-                animate={isOpening ? { scale: 0, opacity: 0, rotate: 20 } : { scale: 1, opacity: 1, rotate: 0 }}
+                style={{ top: "38%", left: "50%", marginLeft: -65 }}
+                animate={isOpening ? { scale: 0, opacity: 0, rotate: 15 } : { scale: 1, opacity: 1, rotate: 0 }}
                 transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
-                whileHover={!isOpening ? { scale: 1.06 } : {}}
+                whileHover={!isOpening ? { scale: 1.07 } : {}}
               >
-                {/* Spinning gold dashed ring outside the seal */}
-                <svg width="140" height="140" viewBox="0 0 140 140" style={{ position: "absolute", inset: 0, animation: "sealSpin 28s linear infinite", willChange: "transform" }} aria-hidden="true">
-                  <circle cx="70" cy="70" r="67.5" fill="none" stroke="rgba(212,175,100,0.45)" strokeWidth="1" strokeDasharray="2 4" />
+                <svg
+                  width="130" height="130" viewBox="0 0 130 130"
+                  style={{ overflow: "visible", display: "block" }}
+                  aria-label="Wax seal with Hussam and Yara's initials"
+                >
+                  <defs>
+                    {/* Drop shadow — inside SVG so Safari renders it against the shape, not bounding box */}
+                    <filter id="sealShadow" x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="b1"/>
+                      <feOffset in="b1" dx="0" dy="7" result="o1"/>
+                      <feFlood floodColor="#A04060" floodOpacity="0.38" result="c1"/>
+                      <feComposite in="c1" in2="o1" operator="in" result="s1"/>
+                      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b2"/>
+                      <feOffset in="b2" dx="0" dy="2" result="o2"/>
+                      <feFlood floodColor="#000000" floodOpacity="0.15" result="c2"/>
+                      <feComposite in="c2" in2="o2" operator="in" result="s2"/>
+                      <feMerge>
+                        <feMergeNode in="s1"/>
+                        <feMergeNode in="s2"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+
+                    {/* Pearlescent blush gradient — light catches upper-left like real wax */}
+                    <radialGradient id="waxBlush" cx="32%" cy="22%" r="78%">
+                      <stop offset="0%"   stopColor="#F2C0D0"/>
+                      <stop offset="35%"  stopColor="#D9789A"/>
+                      <stop offset="75%"  stopColor="#C05878"/>
+                      <stop offset="100%" stopColor="#A84060"/>
+                    </radialGradient>
+
+                    {/* Pearlescent sheen — broad gloss at upper-left */}
+                    <radialGradient id="waxSheen" cx="28%" cy="18%" r="52%">
+                      <stop offset="0%"   stopColor="rgba(255,255,255,0.55)"/>
+                      <stop offset="55%"  stopColor="rgba(255,255,255,0.12)"/>
+                      <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
+                    </radialGradient>
+
+                    {/* Clip calligraphy image to seal shape */}
+                    <clipPath id="sealClip">
+                      <path d={SEAL_PATH}/>
+                    </clipPath>
+                  </defs>
+
+                  {/* Wax body with shadow */}
+                  <g filter="url(#sealShadow)">
+                    <path d={SEAL_PATH} fill="url(#waxBlush)"/>
+                  </g>
+
+                  {/* Pearlescent sheen overlay */}
+                  <path d={SEAL_PATH} fill="url(#waxSheen)"/>
+
+                  {/* Inner embossed ring — thin, like the references */}
+                  <circle cx="65" cy="65" r="45" fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="1.5"/>
+                  <circle cx="65" cy="65" r="43.5" fill="none" stroke="rgba(80,10,30,0.12)" strokeWidth="0.8"/>
+
+                  {/* Calligraphy initials — white on black PNG, screen blend makes black transparent */}
+                  <image
+                    href="/initials-white.png"
+                    x="22" y="7"
+                    width="82" height="116"
+                    clipPath="url(#sealClip)"
+                    style={{ mixBlendMode: "screen" as const }}
+                    preserveAspectRatio="xMidYMid meet"
+                  />
                 </svg>
-
-                {/* Seal body — clipped to circle with clip-path for iOS Safari reliability */}
-                <div style={{ position: "relative", width: 140, height: 140, borderRadius: "50%", overflow: "hidden", WebkitMaskImage: "-webkit-radial-gradient(white, black)" }}>
-
-                  {/* ── ORNAMENTAL SVG — shadow is inside SVG via feDropShadow so iOS Safari
-                      renders it against the actual circle shapes, not the bounding box ── */}
-                  <svg
-                    width="140" height="140" viewBox="0 0 140 140"
-                    style={{ position: "absolute", inset: 0, display: "block", overflow: "visible" }}
-                    aria-hidden="true"
-                  >
-                    <defs>
-                      {/* Shadow filter — inside SVG so it follows circle shape, not bounding box */}
-                      <filter id="sealShadow" x="-30%" y="-30%" width="160%" height="160%">
-                        <feGaussianBlur in="SourceAlpha" stdDeviation="11" result="b1"/>
-                        <feOffset in="b1" dx="0" dy="10" result="o1"/>
-                        <feFlood floodColor="#8C0A28" floodOpacity="0.65" result="c1"/>
-                        <feComposite in="c1" in2="o1" operator="in" result="s1"/>
-                        <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b2"/>
-                        <feOffset in="b2" dx="0" dy="3" result="o2"/>
-                        <feFlood floodColor="#000000" floodOpacity="0.45" result="c2"/>
-                        <feComposite in="c2" in2="o2" operator="in" result="s2"/>
-                        <feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/><feMergeNode in="SourceGraphic"/></feMerge>
-                      </filter>
-                      {/* Rich deep-wax radial gradient */}
-                      <radialGradient id="waxBg" cx="30%" cy="20%" r="80%">
-                        <stop offset="0%" stopColor="#E8607A" />
-                        <stop offset="30%" stopColor="#AA1540" />
-                        <stop offset="68%" stopColor="#6E0820" />
-                        <stop offset="100%" stopColor="#3E0410" />
-                      </radialGradient>
-                      {/* Convex gloss at top-left — like light on a dome */}
-                      <radialGradient id="waxGloss" cx="30%" cy="18%" r="42%">
-                        <stop offset="0%" stopColor="rgba(255,255,255,0.32)" />
-                        <stop offset="60%" stopColor="rgba(255,255,255,0.06)" />
-                        <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-                      </radialGradient>
-                      {/* Gold letter background bloom */}
-                      <radialGradient id="goldBloom" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor="rgba(212,175,100,0.18)" />
-                        <stop offset="100%" stopColor="rgba(212,175,100,0)" />
-                      </radialGradient>
-                    </defs>
-
-                    {/* Wax body group — shadow filter applied here so it tracks the circle, not the SVG box */}
-                    <g filter="url(#sealShadow)">
-                      <circle cx="70" cy="70" r="65" fill="url(#waxBg)" />
-                      <circle cx="70" cy="70" r="65" fill="url(#waxGloss)" />
-                    </g>
-                    {/* Warm gold bloom behind letter zone */}
-                    <circle cx="70" cy="70" r="50" fill="url(#goldBloom)" />
-
-                    {/* ── Border ring system ── */}
-                    {/* Outer dark emboss */}
-                    <circle cx="70" cy="70" r="62.5" fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="2" />
-                    {/* Bright inner edge of outer emboss */}
-                    <circle cx="70" cy="70" r="61" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="1" />
-                    {/* Primary gold ring */}
-                    <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(212,175,100,0.7)" strokeWidth="1.2" />
-                    {/* Fine white inner ring */}
-                    <circle cx="70" cy="70" r="55.5" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.7" />
-                    {/* Secondary gold ring — inner border */}
-                    <circle cx="70" cy="70" r="52" fill="none" stroke="rgba(212,175,100,0.35)" strokeWidth="0.8" />
-
-                    {/* ── 8 gold diamond jewels on primary ring ── */}
-                    {[0,45,90,135,180,225,270,315].map((deg) => {
-                      const rad = deg * Math.PI / 180;
-                      const x = 70 + 58 * Math.sin(rad);
-                      const y = 70 - 58 * Math.cos(rad);
-                      return (
-                        <g key={deg} transform={`translate(${x},${y})`}>
-                          <rect x="-3" y="-3" width="6" height="6" transform="rotate(45)" fill="rgba(212,175,100,0.9)" />
-                          <rect x="-1.5" y="-1.5" width="3" height="3" transform="rotate(45)" fill="rgba(255,240,200,0.85)" />
-                        </g>
-                      );
-                    })}
-
-                    {/* ── 16 dot accents on secondary inner ring ── */}
-                    {Array.from({ length: 16 }, (_, i) => {
-                      const rad = i * 22.5 * Math.PI / 180;
-                      const x = 70 + 52 * Math.sin(rad);
-                      const y = 70 - 52 * Math.cos(rad);
-                      return <circle key={i} cx={x} cy={y} r="1.1" fill="rgba(212,175,100,0.45)" />;
-                    })}
-
-                    {/* ── Top ornament: elegant crown arch ── */}
-                    <g transform="translate(70,13)" stroke="rgba(212,175,100,0.95)" strokeWidth="1.1" strokeLinecap="round" fill="none">
-                      <line x1="-18" y1="0" x2="18" y2="0" />
-                      <path d="M-18,0 Q-14,-5 -9,-3.5 Q-5,-2 0,-7 Q5,-2 9,-3.5 Q14,-5 18,0" />
-                      <circle cx="0" cy="-10" r="1.8" fill="rgba(212,175,100,0.95)" stroke="none" />
-                      <circle cx="-18" cy="0" r="1.4" fill="rgba(212,175,100,0.8)" stroke="none" />
-                      <circle cx="18" cy="0" r="1.4" fill="rgba(212,175,100,0.8)" stroke="none" />
-                      <line x1="-5" y1="-7" x2="5" y2="-7" stroke="rgba(212,175,100,0.5)" strokeWidth="0.6" />
-                    </g>
-
-                    {/* ── Bottom ornament: mirror of crown ── */}
-                    <g transform="translate(70,127)" stroke="rgba(212,175,100,0.95)" strokeWidth="1.1" strokeLinecap="round" fill="none">
-                      <line x1="-18" y1="0" x2="18" y2="0" />
-                      <path d="M-18,0 Q-14,5 -9,3.5 Q-5,2 0,7 Q5,2 9,3.5 Q14,5 18,0" />
-                      <circle cx="0" cy="10" r="1.8" fill="rgba(212,175,100,0.95)" stroke="none" />
-                      <circle cx="-18" cy="0" r="1.4" fill="rgba(212,175,100,0.8)" stroke="none" />
-                      <circle cx="18" cy="0" r="1.4" fill="rgba(212,175,100,0.8)" stroke="none" />
-                    </g>
-
-                    {/* ── Left ornament ── */}
-                    <g transform="translate(11,70)" stroke="rgba(212,175,100,0.75)" strokeWidth="0.9" strokeLinecap="round" fill="none">
-                      <path d="M0,-12 C-6,-8 -7,-1 -3,2 C-7,5 -6,11 0,13" />
-                      <circle cx="-5.5" cy="1" r="1.2" fill="rgba(212,175,100,0.75)" stroke="none" />
-                    </g>
-
-                    {/* ── Right ornament ── */}
-                    <g transform="translate(129,70)" stroke="rgba(212,175,100,0.75)" strokeWidth="0.9" strokeLinecap="round" fill="none">
-                      <path d="M0,-12 C6,-8 7,-1 3,2 C7,5 6,11 0,13" />
-                      <circle cx="5.5" cy="1" r="1.2" fill="rgba(212,175,100,0.75)" stroke="none" />
-                    </g>
-
-                    {/* ── Diagonal divider — follows the letter composition ── */}
-                    <line x1="54" y1="28" x2="86" y2="112" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
-
-                    {/* ── Center jewel ── */}
-                    <g transform="translate(70,70)">
-                      <rect x="-5" y="-5" width="10" height="10" transform="rotate(45)" fill="rgba(212,175,100,1)" />
-                      <rect x="-3" y="-3" width="6" height="6" transform="rotate(45)" fill="rgba(255,240,190,0.9)" />
-                      <rect x="-1.3" y="-1.3" width="2.6" height="2.6" transform="rotate(45)" fill="rgba(255,255,255,1)" />
-                    </g>
-                  </svg>
-
-                  {/* ══════════════════════════════════════════════
-                      LETTERS — guaranteed bidi-safe via CSS right/left
-                      Arabic RTL: ح (first) → RIGHT side
-                                  ي (second) → LEFT side
-                      Each letter is in its own half-width box with
-                      text-align center. Single char = no reordering.
-                      ══════════════════════════════════════════════ */}
-
-                  {/* ي — Yara — LEFT half, upper zone */}
-                  <span
-                    aria-label="ي"
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      width: 74,
-                      textAlign: "center",
-                      top: 6,
-                      fontFamily: "'Amiri', serif",
-                      fontSize: 64,
-                      fontWeight: 700,
-                      fontStyle: "italic",
-                      color: "#FFF3E2",
-                      lineHeight: 1,
-                      display: "block",
-                      transform: "rotate(8deg)",
-                      transformOrigin: "50% 50%",
-                      textShadow: "0 3px 14px rgba(0,0,0,0.7), 0 0 28px rgba(255,210,140,0.2)",
-                      userSelect: "none",
-                      pointerEvents: "none",
-                      zIndex: 2,
-                    }}
-                  >
-                    ي
-                  </span>
-
-                  {/* ح — Hussam — RIGHT half, lower zone */}
-                  <span
-                    aria-label="ح"
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      width: 74,
-                      textAlign: "center",
-                      top: 58,
-                      fontFamily: "'Amiri', serif",
-                      fontSize: 64,
-                      fontWeight: 700,
-                      fontStyle: "italic",
-                      color: "#FFF3E2",
-                      lineHeight: 1,
-                      display: "block",
-                      transform: "rotate(-8deg)",
-                      transformOrigin: "50% 50%",
-                      textShadow: "0 3px 14px rgba(0,0,0,0.7), 0 0 28px rgba(255,210,140,0.2)",
-                      userSelect: "none",
-                      pointerEvents: "none",
-                      zIndex: 2,
-                    }}
-                  >
-                    ح
-                  </span>
-                </div>
               </motion.div>
+              {/* ──────────────────────────────────────────────── */}
+
             </motion.div>
           </motion.div>
 
-          {/* Animated prompt */}
+          {/* "Open Me" prompt — script style matching the reference */}
           <motion.div
             className="flex flex-col items-center gap-3"
             animate={isOpening ? { opacity: 0, y: -8 } : { opacity: 1 }}
@@ -357,10 +252,12 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
               animate={{ opacity: [0.35, 0.9, 0.35] }}
               transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
             >
-              <p className="font-sans uppercase tracking-[0.38em] text-foreground/40" style={{ fontSize: "0.58rem" }}>
-                tap to open
+              <p
+                className="font-script"
+                style={{ fontSize: "clamp(1.4rem, 4.5vw, 1.9rem)", color: "hsl(var(--foreground)/0.5)" }}
+              >
+                Open Me
               </p>
-              {/* Animated down arrows */}
               <div className="flex flex-col items-center" style={{ gap: 2 }}>
                 {[0, 1, 2].map((i) => (
                   <motion.div
@@ -376,17 +273,6 @@ export default function Envelope({ onOpen }: { onOpen: () => void }) {
               </div>
             </motion.div>
           </motion.div>
-
-          <style>{`
-            @keyframes pulse {
-              0%, 100% { opacity: 0.6; transform: scale(1); }
-              50% { opacity: 1; transform: scale(1.1); }
-            }
-            @keyframes sealSpin {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-            }
-          `}</style>
         </motion.div>
       )}
     </AnimatePresence>
